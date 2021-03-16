@@ -21,7 +21,7 @@ module MyCore (
     end
 
     // remove following lines when you start
-    assign ireq = '0;
+    /*assign ireq = '0;
     assign dreq = '0;
-    logic _unused_ok = &{iresp, dresp};
+    logic _unused_ok = &{iresp, dresp};*/
 endmodule
