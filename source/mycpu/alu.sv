@@ -1,12 +1,12 @@
 `include "common.svh"
 
 module alu (
-    input logic i4 func,
+    input logic i4 funct,
     input logic i32 in1, in2,
     output logic i32 out
 );
     always_comb begin
-        case(func)
+        case(funct)
             4'b0000: out = in1 + in2;
             4'b0001: out = in1 - in2;
             4'b0010: out = in1 & in2;
