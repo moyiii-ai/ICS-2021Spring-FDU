@@ -8,9 +8,14 @@ module MyCore (
     output dbus_req_t  dreq,
     input  dbus_resp_t dresp
 );
-    /**
-     * TODO (Lab1) your code here :)
-     */
+    logic [3:0] rdE;
+    logic [31:0] outE, vtE;
+    execute Execute(
+        .control(controlD[5:0]),
+        .rd(rdD), .shamt(shamtD),
+        .vs(vsD), .vt(vtD), .imm(immD),
+        .rdE(rdE), .outE(outE), .vt(vtE)
+    );
 
     always_ff @(posedge clk)
     if (resetn) begin
