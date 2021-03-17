@@ -1,16 +1,16 @@
 `include "common.svh"
 
 module execute (
-    input logic i6 control, 
-    input logic i5 rd, shamt,
-    input logic i32 vs, vt, imm,
-    output logic i5 rdE,
-    output logic i32 outE, vtE
+    input logic[5:0] control, 
+    input logic[4:0] rd, shamt,
+    input logic[31:0] vs, vt, imm,
+    output logic[4:0] rdE,
+    output logic[31:0] outE, vtE
 );
 
     logic i32 srcA, srcB;
     assign srcA = vs;
-    
+
     always_comb begin
         if(control[4]) 
             srcB = imm;
