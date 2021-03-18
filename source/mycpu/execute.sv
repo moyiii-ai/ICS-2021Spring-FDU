@@ -8,17 +8,22 @@ module execute (
     output logic [31:0] outE, vtE
 );
 
+    logic alu_imm, alu_shamt;
     logic [31:0] srcA, srcB;
-    assign srcA = vs;
+    logic [3:0] alu_funct;
+
+    assign alu_imm = control[4];
+    assign alu_shamt = control[5];
+    assign alu_funct = control[3:0];
 
     always_comb begin
-        if(control[4]) 
+        if(alu_imm) 
             srcB = imm;
-        if(control[5])
+        if(alu_shamt)
             srcB = {27'b0, shamt};
     end
 
-    alu ALU(.funct(control[3:0]), .in1(srcA), .in2(srcB), .out(outE));
+    alu ALU(.funct(alu_funct), .in1(srcA), .in2(srcB), .out(outE));
 
     assign rdE = rd;
     assign vtE = vt;
