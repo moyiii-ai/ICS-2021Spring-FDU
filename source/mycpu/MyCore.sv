@@ -17,7 +17,7 @@ module MyCore (
     logic [3:0] rdE;
     logic [31:0] outE, vtE;
     execute Execute(
-        .control(controlD[5:0]),
+        .control(controlD[7:2]),
         .rd(rdD), .shamt(shamtD),
         .vs(vsD), .vt(vtD), .imm(immD),
         .rdE(rdE), .outE(outE), .vt(vtE)

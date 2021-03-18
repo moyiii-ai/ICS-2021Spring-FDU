@@ -1,9 +1,9 @@
 `include "common.svh"
 
 module alu (
-    input logic i4 funct,
-    input logic i32 in1, in2,
-    output logic i32 out
+    input logic [3:0] funct,
+    input logic [31:0] in1, in2,
+    output logic [31:0] out
 );
     always_comb begin
         case(funct)
@@ -21,5 +21,6 @@ module alu (
             
             4'b1111: out = in2;
             default: out = 32'b0;
+        endcase
     end
 endmodule
