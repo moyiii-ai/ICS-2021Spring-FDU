@@ -5,8 +5,8 @@ module decode (
     input logic [31:0] instr, pc,
     output logic j,
     output logic [8:0] controlD,
-    output logic [4:0] rd, shamt,
-    output logic [31:0] vs, vt, imm, pcbranch
+    output logic [4:0] rdD, shamtD,
+    output logic [31:0] immD, pcbranch
 
 );
     /*control :
@@ -29,12 +29,22 @@ module decode (
         end
     end
 
+    logic [4:0] rt, rs;
+    logic [] st_imm;
+
     logic sign_extend;
     logic [1:0] reg_dst;
-    // 00: 0  01: r1 10: r2 11:31 and imm = pc + 8
+    // 00: 0  01: rd 10: rt 11:31 and imm = pc + 8
     assign sign_extend = control[11];
     assign reg_dst = control[10:9];
-
+    always_comb begin
+        case(reg_dst)
+            2'b00: rdD = 0;
+            2'b01: rdD = rd;
+            2'b10: rdD = rt;
+            2'b11: rdD = 31;
+        endcase
+    end
     assign controlD = control[8:0];
 endmodule
 
