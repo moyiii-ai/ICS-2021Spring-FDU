@@ -10,12 +10,12 @@ module decode (
 
 );
     /*control :
-    sign_extend(1) +
+    sign_extend(1) + imm_type(2)
     reg_dst(2) + reg_write(1) + 
     alu_shamt(1) + alu_imm(1) + alu_funct(4) +
     memtoreg(1) + mem_write(1)*/
     logic [5:0] op, funct;
-    logic [11:0] control;
+    logic [13:0] control;
     assign op = instr[31:26];
     assign funct = instr[5:0];
     always_comb begin
@@ -31,7 +31,9 @@ module decode (
             endcase
         end
         else begin
-
+            case(op)
+                `
+            endcase
         end
     end
 
@@ -43,10 +45,13 @@ module decode (
     assign shamtD = instr[10:6];
 
     logic sign_extend;
-    logic [1:0] reg_dst;
-    // 00: 0  01: rd 10: rt 11:31 and imm = pc + 8
-    assign sign_extend = control[11];
+    logic [1:0] reg_dst, imm_type;
+    // reg_dst: 00:0  01:rd 10:rt 11:31
+    //imm_tpye: 00:ext_imm 01:imm<<16 10:imm<<2 11:pc+4
+    assign sign_extend = control[13];
+    assign imm_type = control[12:11];
     assign reg_dst = control[10:9];
+
     always_comb begin
         case(reg_dst)
             2'b00: rdD = 0;
@@ -55,6 +60,7 @@ module decode (
             2'b11: rdD = 31;
         endcase
     end
+    
     assign controlD = control[8:0];
 endmodule
 
