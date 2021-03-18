@@ -19,11 +19,21 @@ module execute (
     always_comb begin
         if(alu_imm) 
             srcB = imm;
-        if(alu_shamt)
-            srcB = {27'b0, shamt};
+        else 
+            srcB = vt;
+    end
+    always_comb begin
+        if(alu_shamt) 
+            srcA = {27'b0, shamt};
+        else 
+            srcA = vs;
     end
 
-    alu ALU(.funct(alu_funct), .in1(srcA), .in2(srcB), .out(outE));
+    alu ALU(
+        .funct(alu_funct), 
+        .in1(srcA), .in2(srcB), 
+        .out(outE)
+    );
 
     assign rdE = rd;
     assign vtE = vt;

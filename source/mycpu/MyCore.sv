@@ -8,10 +8,25 @@ module MyCore (
     output dbus_req_t  dreq,
     input  dbus_resp_t dresp
 );
-    logic [4:0]  rsD, rtD;
+    logic [31:0] instr, vsD, vtD, immD, prbranch;
+    logic [4:0] rsD, rtD, rdD, shamtD;
+    logic j;
+    logic [8:0] controlD;
     regfile Regfile(
         .clk(clk),
-        .ra1(rsD), .ra2(rtD)
+        .ra1(rsD), .ra2(rtD), .wa3(),
+        .write_enable(),
+        .wd3(),
+        .rd1(vsD), .rd2(vtD)
+    );
+
+    decode Decode(
+        .instr(instr), .pc(pc),
+        .vs(vsD), vt(vtD),
+        .j(jD),
+        .controlD,
+        .rsD, .rtD, .rdD, shamtD,
+        .immD, .prbranch
     );
 
     logic [3:0] rdE;

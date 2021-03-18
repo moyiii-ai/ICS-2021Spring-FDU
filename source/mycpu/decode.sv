@@ -3,9 +3,10 @@
 
 module decode (
     input logic [31:0] instr, pc,
+    input logic [31:0] vs, vt,
     output logic j,
     output logic [8:0] controlD,
-    output logic [4:0] rdD, shamtD,
+    output logic [4:0] rsD, rtD, rdD, shamtD,
     output logic [31:0] immD, pcbranch
 
 );
@@ -21,26 +22,43 @@ module decode (
     always_comb begin
         if(op == `RTYPE) begin
             case(funct)
-                `ADDU: control = 12'b0_10_1_0_0_0000_0_0;
-                `SUBU: control = 12'b0_10_1_0_0_0001_0_0;
-                `AND: control = 12'b0_10_1_0_0_0010_0_0;
-                `OR: control = 12'b0_10_1_0_0_0011_0_0;
-                `NOR: control = 12'b0_10_1_0_0_0100_0_0;
-                `XOR: control = 12'b0_10_1_0_0_0101_0_0;
-                `SLL: control = 12'b0_10_1_0_0_0001_0_0;
+                `ADDU:  control = 14'b0_00_01_1_0_0_0000_0_0;
+                `SUBU:  control = 14'b0_00_01_1_0_0_0001_0_0;
+                `AND:   control = 14'b0_00_01_1_0_0_0010_0_0;
+                `OR:    control = 14'b0_00_01_1_0_0_0011_0_0;
+                `NOR:   control = 14'b0_00_01_1_0_0_0100_0_0;
+                `XOR:   control = 14'b0_00_01_1_0_0_0101_0_0;
+                `SLL:   control = 14'b0_00_01_1_1_0_0110_0_0;
+                `SRA:   control = 14'b0_00_01_1_1_0_0111_0_0;
+                `SRL:   control = 14'b0_00_01_1_1_0_1000_0_0;
+                `SLT:   control = 14'b0_00_01_1_0_0_1001_0_0;
+                `SLTU:  control = 14'b0_00_01_1_0_0_1010_0_0;
+                default: control = 0;
             endcase
         end
         else begin
             case(op)
-                `
+                `ADDIU: control = 14'b1_00_10_1_0_1_0000_0_0;
+                `ADDI:  control = 14'b0_00_10_1_0_1_0010_0_0;
+                `ORI:   control = 14'b0_00_10_1_0_1_0011_0_0;
+                `XORI:  control = 14'b0_00_10_1_0_1_0101_0_0;
+                `SLTI:  control = 14'b1_00_10_1_0_1_1001_0_0;
+                `SLTIU: control = 14'b0_00_10_1_0_1_1010_0_0;
+                `LUI:   control = 14'b0_01_10_1_0_1_1111_0_0;
+                `BEQ:   control = 14'b1_10_00_0_0_1_1110_0_0;
+                `BNE:   control = 14'b1_10_00_0_0_1_1110_0_0;
+                `LW:    control = 14'b1_00_10_1_0_1_0000_1_0;
+                `SW:    control = 14'b1_00_10_0_0_1_0000_0_1;
+                `J:     control = 14'b0_00_00_0_0_0_0000_0_0;
+                `JAL:   control = 14'b0_11_11_1_0_1_1111_0_0;
             endcase
         end
     end
 
-    logic [4:0] rt, rd;
     logic [15:0] st_imm;
-    assign rt = instr[15:11];
-    assign rd = instr[10:6];
+    assign rsD = instr[25:21];
+    assign rtD = instr[20:16];
+    assign rd = instr[15:11];
     assign st_imm = instr[15:0];
     assign shamtD = instr[10:6];
 
@@ -56,11 +74,29 @@ module decode (
         case(reg_dst)
             2'b00: rdD = 0;
             2'b01: rdD = rd;
-            2'b10: rdD = rt;
+            2'b10: rdD = rtD;
             2'b11: rdD = 31;
         endcase
     end
+
+    logic [31:0] ext_imm;
+    extension Extension(
+        .sign_extend, 
+        .immI(st_imm),
+        .imm(ext_imm)
+    );
+
+    always_comb begin
+        case(imm_type)
+            2'b00: immD = ext_imm;
+            2'b01: immD = ext_imm << 16;
+            2'b10: immD = ext_imm << 2;
+            2'b11: immD = pc + 4;
+        endcase 
+    end
     
+    assign pcbranch = pc + immD;
+    assign j = ((op == `BEQ) & (vs == vt)) | ((op == `BNE) & (vs != vt));
     assign controlD = control[8:0];
 endmodule
 
