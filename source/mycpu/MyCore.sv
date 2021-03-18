@@ -16,7 +16,7 @@ module MyCore (
         .clk(clk),
         .ra1(rsD), .ra2(rtD), .wa3(),
         .write_enable(),
-        .wd3(),
+        .wd3(ResultW),
         .rd1(vsD), .rd2(vtD)
     );
 
@@ -37,6 +37,14 @@ module MyCore (
         .vs(vsD), .vt(vtD), .imm(immD),
         .rdE(rdE), .outE(outE), .vt(vtE)
     );
+
+    logic [31:0] ResultW;
+    writeback WriteBack(
+        .memtoreg(controlM[9]),
+        .ReadDataW(outM), .ALUoutW(aluoutE),
+        .ResultW
+    );
+
 
     always_ff @(posedge clk)
     if (resetn) begin
