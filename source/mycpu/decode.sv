@@ -21,7 +21,13 @@ module decode (
     always_comb begin
         if(op == `RTYPE) begin
             case(funct)
-                `ADDU: control = 12'b0_0_0_01
+                `ADDU: control = 12'b0_10_1_0_0_0000_0_0;
+                `SUBU: control = 12'b0_10_1_0_0_0001_0_0;
+                `AND: control = 12'b0_10_1_0_0_0010_0_0;
+                `OR: control = 12'b0_10_1_0_0_0011_0_0;
+                `NOR: control = 12'b0_10_1_0_0_0100_0_0;
+                `XOR: control = 12'b0_10_1_0_0_0101_0_0;
+                `SLL: control = 12'b0_10_1_0_0_0001_0_0;
             endcase
         end
         else begin
@@ -29,8 +35,12 @@ module decode (
         end
     end
 
-    logic [4:0] rt, rs;
-    logic [] st_imm;
+    logic [4:0] rt, rd;
+    logic [15:0] st_imm;
+    assign rt = instr[15:11];
+    assign rd = instr[10:6];
+    assign st_imm = instr[15:0];
+    assign shamtD = instr[10:6];
 
     logic sign_extend;
     logic [1:0] reg_dst;
