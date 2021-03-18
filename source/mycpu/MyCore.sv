@@ -8,6 +8,12 @@ module MyCore (
     output dbus_req_t  dreq,
     input  dbus_resp_t dresp
 );
+    logic [4:0]  rsD, rtD;
+    regfile Regfile(
+        .clk(clk),
+        .ra1(rsD), .ra2(rtD)
+    );
+
     logic [3:0] rdE;
     logic [31:0] outE, vtE;
     execute Execute(
