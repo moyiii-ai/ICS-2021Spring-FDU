@@ -1,15 +1,20 @@
 `include "common.svh"
 
 module writeback(
-    intput logic memtoreg,
-    input logic [31:0] ReadDataW, ALUoutW,
+    input logic memtoreg, reg_write,
+    input logic [4:0] rdM,
+    input logic [31:0] ReadDataM, ALUoutM,
+    output logic write_enable,
+    output logic [4:0] rdW,
     output logic [31:0] ResultW
 );
+    assign write_enable = reg_write;
+    assign rdW = rdM;
     always_comb begin
         if(memtoreg)
-            ResultW = ReadDataW;
+            ResultW = ReadDataM;
         else 
-            ResultW = ALUoutW;
+            ResultW = ALUoutM;
         end
     end
 endmodule
