@@ -7,7 +7,7 @@ module decode (
     output logic j,
     output logic [8:0] controlD,
     output logic [4:0] rsD, rtD, rdD, shamtD,
-    output logic [31:0] immD, pcbranch
+    output logic [31:0] immD
 
 );
     /*control :
@@ -95,7 +95,6 @@ module decode (
         endcase 
     end
     
-    assign pcbranch = pc + immD;
     assign j = ((op == `BEQ) & (vs == vt)) | ((op == `BNE) & (vs != vt));
     assign controlD = control[8:0];
 endmodule

@@ -1,8 +1,15 @@
 `include "common.svh"
 
 module fetch (
-    input logic i32 pc,
-    output logic i32 pcplus4
+    input logic [31:0] pc, instr, vs,
+    input  ibus_resp_t iresp,
+    output ibus_req_t  ireq,
+    output logic [31:0] pcF, instrF
 );
-    assign pcplus4 = pc + 32'b4;
+    logic [31:0] pcplus;
+    assign pcplus = pc + 4;
+    
+    assign ireq.valid = 1;
+    assign ireq.addr = pcF;
+    assign instrF = iresp.data;
 endmodule
