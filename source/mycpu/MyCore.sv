@@ -8,7 +8,8 @@ module MyCore (
     output dbus_req_t  dreq,
     input  dbus_resp_t dresp
 );
-    logic [31:0] instr, vsD, vtD, immD, pcbranch;
+    logic [31:0] pc, pcbranch;
+    logic [31:0] instr, vsD, vtD, immD;
     logic [4:0] rsD, rtD, rdD, shamtD;
     logic j;
     logic [8:0] controlD;
@@ -66,10 +67,16 @@ module MyCore (
 
     always_ff @(posedge clk)
     if (resetn) begin
-        // AHA!
+        pc <= 32'hbfc0_0000;
+        instr <= 0;
     end else begin
-        // reset
-        // NOTE: if resetn is X, it will be evaluated to false.
+        if(stall) begin
+
+        end
+        else begin
+            pc <= pcF;
+            instr <= instrF;
+        end
     end
 
     // remove following lines when you start
