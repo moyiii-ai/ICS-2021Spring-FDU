@@ -8,58 +8,70 @@ module MyCore (
     output dbus_req_t  dreq,
     input  dbus_resp_t dresp
 );
-    logic [31:0] pc;
-    logic [31:0] instr, vsD, vtD, immD;
+    logic [31:0] pc, instr;
+    logic [31:0] pcF, instrF;
+
+    fetch Fetch(
+        .pc(pc), .instr(instr), .vs(vsD),
+        .j(jD),
+        .iresp(iresp),
+        .ireq(ireq),
+        .pcF(pcF), .instrF(instrF)
+    );
+
+    logic [31:0] vsD, vtD, immD;
     logic [4:0] rsD, rtD, rdD, shamtD;
-    logic j;
+    logic jD;
     logic [8:0] controlD;
     regfile Regfile(
         .clk(clk),
         .ra1(rsD), .ra2(rtD), .wa3(rdW),
-        .write_enable(write_enable),
+        .write_enable(write_enableW),
         .wd3(vW),
         .rd1(vsD), .rd2(vtD)
     );
 
     decode Decode(
-        .instr(instr), .pc(pc),
+        .instr(instrF), .pc(pc),
         .vs(vsD), vt(vtD),
         .j(jD),
         .controlD(controlD),
-        .rsD(rsD), .rtD(rtD), .rdD(rdD), shamtD(shamtD),
-        .immD(immD), .pcbranch(pcbranch)
+        .rsD(rsD), .rtD(rtD), .rdD(rdD), .shamtD(shamtD),
+        .immD(immD)
     );
 
-    logic [4:0] rdE;
-    logic [31:0] outE, vtE;
+    logic [4:0] rde, rdE, shamte;
+    logic [31:0] aluoutE, vtE, imme, vse, vte;
     logic [8:0] controlE;
     execute Execute(
         .control(controlE[7:2]),
-        .rd(rdD), .shamt(shamtD),
-        .vs(vsD), .vt(vtD), .imm(immD),
-        .rdE(rdE), .outE(outE), .vt(vtE)
+        .rd(rde), .shamt(shamte),
+        .vs(vse), .vt(vte), .imm(imme),
+        .rdE(rdE), .outE(aluoutE), .vt(vtE)
     );
 
-    logic [31:0] rdM, dataoutM, aluoutM;
-    logic [4:0] rdM;
+    logic [31:0] rdM, dataoutM, aluoutM, aluoutm, vtm;
+    logic [4:0] rdM, rdm;
     logic [8:0] controlM;
     memory Memory(
         .memtoreg(controlM[1]), .mem_write(controlM[0]);
-        .rdE(rdE),
-        .WriteData(outE), .addr(vtE),
+        .rdE(rdm),
+        .WriteData(vtm), .addr(aluoutm),
+        .resp(dresp),
+        .req(dreq),
         .rdM(rdM),
-        .ReadData(dataoutM), .aluoutM(ALUoutM)
+        .ReadData(dataoutM), .aluoutM(aluoutM)
     );
 
-    logic [31:0] vW;
-    logic [4:0] rdW;
-    logic write_enable;
+    logic [31:0] vW, dataoutw, aluoutw;
+    logic [4:0] rdW, rdw;
+    logic write_enableW;
     logic [8:0] controlW;
     writeback WriteBack(
-        .memtoreg(controlW[1]), .reg_write(controlW[9]),
-        .rdM(rdM),
-        .ReadDataM(dataoutM), .ALUoutM(aluoutM),
-        .write_enable(write_enable),
+        .memtoreg(controlW[1]), .reg_write(controlW[8]),
+        .rdM(rdw),
+        .ReadDataM(dataoutw), .ALUoutM(aluoutw),
+        .write_enable(write_enableW),
         .rdW(rdW),
         .ResultW(vW)
     );
@@ -68,12 +80,34 @@ module MyCore (
     always_ff @(posedge clk)
     if (resetn) begin
         pc <= 32'hbfc0_0000;
+        pcF <= 32'hbfc0_0000;
         instr <= 0;
-    end else begin
-        if(stall) begin
+        instrF <= 0;
+        {controlD, immD, rdD, vtD, vsD, rsD, rtD, jD} <= 0;
+        {controlE, rde, vse, vte, imme, vtE, rdE, aluoutE} <= 0;
+        {controlM, rdm, vtm, aluoutm, rdM, dataoutM, aluoutM} <= 0;
+        {controlW, rdw, dataoutw, aluoutw, vW, rdW, write_enableW} <= 0;
+    end 
+    else begin
+        controlW <= controlM;
+        rdw <= rdM;
+        dataoutw <= dataoutM;
+        aluoutw <= aluoutM;
 
+        controlM <= controlE;
+        rde <= rdD;
+        vse <= vsD;
+        vte <= vtD;
+        imme <= immD;
+        if(stall) begin
+            {controlE, vse, rde, imme, vte, vtE, rdE, aluoutE} <= 0;
         end
         else begin
+            controlE <= controlD;
+            rde <= rdD;
+            vse <= vsD;
+            vte <= vtE;
+            imme <= immE;
             pc <= pcF;
             instr <= instrF;
         end
