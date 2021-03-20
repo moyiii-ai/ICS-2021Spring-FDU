@@ -2,14 +2,20 @@
 
 module hazard(
     input logic [5:0] op,   
-    input logic load,
-    input logic [4:0] rde,
-    input logic [4:0] rdm, rdW, rsD, rtD, rse, rte, 
+    input logic loadE, regWriteE, 
+    input logic [4:0] rde, rsD, rtD,
+    input logic [4:0] rdm, rdW, rse, rte, 
     input logic [31:0] vsD, vtD, vse, vte,
     input logic [31:0] aluoutm, vW,
     output logic [31:0] vsHD, vtHD, vsHe, vtHe,
     output logic stall
 );
+    logic stallb1, stallb2, stallw;
+    assign stallb1 = jD & regWriteE & ((rde == rsD) | (rde == rtD));
+    assign stallb2 = jD & loadE & ((rdm == rsD) | (rdm == rtD));
+    assign stallw = loadE & ((rde == rsD) | (rde == rtD));
+    assign stall = stallb1 | stallb2 | stallw;
+
     mux1 muxs1(
         .re(rse), .rm(rdm), .rw(rdW),
         .aluoutm(aluoutm), .vW(vW), .ve(vse),

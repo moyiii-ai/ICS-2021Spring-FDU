@@ -80,7 +80,9 @@ module MyCore (
     logic stall;
     hazard Hazard(
         .op(instr[31:26]),
-        .rdm(rdm), .rdW(rdW), .rsD(rsD), .rtD(rtD), .rse(rse), .rte(rte),
+        .loadE(controlE[1]), .regWriteE(controlE[8]),
+        .rde(rde), .rsD(rsD), .rtD(rtD),
+        .rdm(rdm), .rdW(rdW), .rse(rse), .rte(rte),
         .vsD(vsD), .vtD(vtD), .vse(vse), .vte(vte),
         .aluoutm(aluoutm), .vW(vW),
         .vsHD(vsHD), .vtHD(vtHD), .vsHe(vsHe), .vtHe(vtHe),
