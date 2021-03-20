@@ -1,7 +1,9 @@
 `include "common.svh"
 
 module hazard(
-    input logic [5:0] op,    
+    input logic [5:0] op,   
+    input logic load,
+    input logic [4:0] rde,
     input logic [4:0] rdm, rdW, rsD, rtD, rse, rte, 
     input logic [31:0] vsD, vtD, vse, vte,
     input logic [31:0] aluoutm, vW,
