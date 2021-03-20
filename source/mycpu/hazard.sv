@@ -1,31 +1,63 @@
 `include "common.svh"
 
 module hazard(
-    input logic [5:0] op,
-    input logic [31:0] vsD, vtD, aluoutE, vW,
-    input logic [4:0] rdE, rdW, rsD, rtD, 
-    output logic [31:0] vsH, vtH,
+    input logic [5:0] op,    
+    input logic [4:0] rdm, rdW, rsD, rtD, rse, rte, 
+    input logic [31:0] vsD, vtD, vse, vte,
+    input logic [31:0] aluoutm, vW,
+    output logic [31:0] vsHD, vtHD, vsHe, vtHe,
     output logic stall
 );
-    logic 
+    mux1 muxs1(
+        .re(rse), .rm(rdm), .rw(rdW),
+        .aluoutm(aluoutm), .vW(vW), .ve(vse),
+        .vHe(vsHe)
+    );
+    mux1 muxt1(
+        .re(rte), .rm(rdm), .rw(rdW),
+        .aluoutm(aluoutm), .vW(vW), .ve(vte),
+        .vHe(vtHe)
+    );
+
+    mux2 muxs2(
+        .rD(rsD), .rm(rdm),
+        .aluoutm(aluoutm), .vD(vsD),
+        .vHD(vsHD)
+    );
+    mux2 muxt2(
+        .rD(rtD), .rm(rdm),
+        .aluoutm(aluoutm), .vD(vtD),
+        .vHD(vtHD)
+    );
+    
+endmodule
+
+module mux1(
+    input logic [4:0] re, rm, rW,
+    input logic [31:0] aluoutm, vW, ve,
+    output logic [31:0] vHe
+);
     always_comb begin
-        if(rsD == 0)
-            vsH = 0;
-        else if(rdE == rsD) 
-            vsH = aluoutE;
-        else if(rdW == rsD) 
-            vsH = vW;
+        if(re == 0)
+            vHe = 0;
+        else if(re == rm) 
+            vHe = aluoutm;
+        else if(re == rW) 
+            vHe = vW;
         else
-            vsH = vsD;       
+            vHe = vtD;       
     end 
+endmodule
+
+module mux2(
+    input logic [4:0] rD, rm, 
+    input logic [31:0] aluoutm, vD,
+    output logic [31:0] vHD
+);
     always_comb begin
-        if(rtD == 0)
-            vtH = 0;
-        else if(rdE == rtD) 
-            vtH = aluoutE;
-        else if(rdW == rtD) 
-            vtH = vW;
-        else
-            vtH = vtD;       
-    end 
+        if(rm == rD)
+            vHD = aluoutm;
+        else 
+            vHD = vD;
+    end
 endmodule

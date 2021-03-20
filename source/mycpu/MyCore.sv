@@ -10,7 +10,6 @@ module MyCore (
 );
     logic [31:0] pc, instr;
     logic [31:0] pcF, instrF;
-    logic stall;
 
     fetch Fetch(
         .pc(pc), .instr(instr), .vs(vsD),
@@ -20,7 +19,7 @@ module MyCore (
         .pcF(pcF), .instrF(instrF)
     );
 
-    logic [31:0] vsD, vtD, immD, vsH, vtH;
+    logic [31:0] vsD, vtD, immD;
     logic [4:0] rsD, rtD, rdD, shamtD;
     logic jD;
     logic [8:0] controlD;
@@ -34,20 +33,20 @@ module MyCore (
 
     decode Decode(
         .instr(instrF), .pc(pc),
-        .vs(vsD), vt(vtD),
+        .vs(vsHD), vt(vtHD),
         .j(jD),
         .controlD(controlD),
         .rsD(rsD), .rtD(rtD), .rdD(rdD), .shamtD(shamtD),
         .immD(immD)
     );
 
-    logic [4:0] rde, rdE, shamte;
+    logic [4:0] rde, rdE, shamte, rse, rte;
     logic [31:0] aluoutE, vtE, imme, vse, vte;
     logic [8:0] controlE;
     execute Execute(
         .control(controlE[7:2]),
         .rd(rde), .shamt(shamte),
-        .vs(vsH), .vt(vtH), .imm(imme),
+        .vs(vsHe), .vt(vtHe), .imm(imme),
         .rdE(rdE), .outE(aluoutE), .vt(vtE)
     );
 
@@ -77,48 +76,53 @@ module MyCore (
         .ResultW(vW)
     );
 
+    logic [31:0] vsHD, vtHD, vsHe, vtHe;
+    logic stall;
     hazard Hazard(
         .op(instr[31:26]),
-        .load(controlE[1]),
-        .vsD(vsD), .vtD(vtD), .aluoutE(aluoutE), .vW(vW),
-        .rdE(rdE), .rdW(rdW), .rsD(rsD), .rtD(rtD),
-        .vsH(vsH), .vtH(vtH),
+        .rdm(rdm), .rdW(rdW), .rsD(rsD), .rtD(rtD), .rse(rse), .rte(rte),
+        .vsD(vsD), .vtD(vtD), .vse(vse), .vte(vte),
+        .aluoutm(aluoutm), .vW(vW),
+        .vsHD(vsHD), .vtHD(vtHD), .vsHe(vsHe), .vtHe(vtHe),
         .stall(stall)
     );
 
-    always_ff @(posedge clk)
-    if (resetn) begin
-        pc <= 32'hbfc0_0000;
-        pcF <= 32'hbfc0_0000;
-        instr <= 0;
-        instrF <= 0;
-        {controlD, immD, rdD, vtD, vsD, rsD, rtD, jD, shamtD, vsH, vtH} <= 0;
-        {controlE, rde, vse, vte, imme, shamte, vtE, rdE, aluoutE} <= 0;
-        {controlM, rdm, vtm, aluoutm, rdM, dataoutM, aluoutM} <= 0;
-        {controlW, rdw, dataoutw, aluoutw, vW, rdW, write_enableW} <= 0;
-    end 
-    else begin
-        controlW <= controlM;
-        rdw <= rdM;
-        dataoutw <= dataoutM;
-        aluoutw <= aluoutM;
-
-        controlM <= controlE;
-        rdm <= rdE;
-        vtm <= vtE;
-        aluoutm <= aluoutE;
-        if(stall) begin
-            {controlE, rde, vse, vte, imme, shamte, vtE, rdE, aluoutE} <= 0;
-        end
+    always_ff @(posedge clk) begin
+        if (resetn) begin
+            pc <= 32'hbfc0_0000;
+            pcF <= 32'hbfc0_0000;
+            instr <= 0;
+            instrF <= 0;
+            {controlD, immD, rdD, vtD, vsD, rsD, rtD, jD, shamtD, vsH, vtH} <= 0;
+            {controlE, rde, rse, rte, vse, vte, imme, shamte, vtE, rdE, aluoutE} <= 0;
+            {controlM, rdm, vtm, aluoutm, rdM, dataoutM, aluoutM} <= 0;
+            {controlW, rdw, dataoutw, aluoutw, vW, rdW, write_enableW} <= 0;
+        end 
         else begin
-            controlE <= controlD;
-            rde <= rdD;
-            vse <= vsD;
-            vte <= vtD;
-            imme <= immE;
-            shamte <= shamtD;
-            pc <= pcF;
-            instr <= instrF;
+            controlW <= controlM;
+            rdw <= rdM;
+            dataoutw <= dataoutM;
+            aluoutw <= aluoutM;
+
+            controlM <= controlE;
+            rdm <= rdE;
+            vtm <= vtE;
+            aluoutm <= aluoutE;
+            if(stall) begin
+                {controlE, rde, rse, rte, vse, vte, imme, shamte, vtE, rdE, aluoutE} <= 0;
+            end
+            else begin
+                controlE <= controlD;
+                rde <= rdD;
+                rse <= rsD;
+                rte <= rtD;
+                vse <= vsD;
+                vte <= vtD;
+                imme <= immE;
+                shamte <= shamtD;
+                pc <= pcF;
+                instr <= instrF;
+            end
         end
     end
 

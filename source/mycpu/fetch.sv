@@ -7,7 +7,8 @@ module fetch (
     output ibus_req_t  ireq,
     output logic [31:0] pcF, instrF
 );
-    logic [31:0] pcplus;
+    //pcc: selectpc pcF: Fetch pc:decode
+    logic [31:0] pcplus, pcc;
     assign pcplus = pc + 4;
 
     logic [25:0] instr_index;
@@ -28,26 +29,30 @@ module fetch (
         case(op)
             `RTYPE:
                 if(funct == `JR)
-                    pcF = vs;
+                    pcc = vs;
                 else
-                    pcF = pcplus;
+                    pcc = pcplus;
             `BNE:
                 if(j)
-                    pcF = bpc;
+                    pcc = bpc;
                 else
-                    pcF = pcplus;
+                    pcc = pcplus;
             `BEQ:
                 if(j)
-                    pcF = bpc;
+                    pcc = bpc;
                 else
-                    pcF = pcplus;
-            `J:   pcF = jpc;
-            `JAL: pcF = jpc;
-            default: pcF = pcplus;
+                    pcc = pcplus;
+            `J:   pcc = jpc;
+            `JAL: pcc = jpc;
+            default: pcc = pcplus;
         endcase
     end
 
+    always_ff @(posedge clk) begin
+        pcF <= pcc;
+    end
     assign ireq.valid = 1;
     assign ireq.addr = pcF;
     assign instrF = iresp.data;
+    
 endmodule
