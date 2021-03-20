@@ -33,6 +33,7 @@ module decode (
                 `SRL:   control = 14'b0_00_01_1_1_0_1000_0_0;
                 `SLT:   control = 14'b0_00_01_1_0_0_1001_0_0;
                 `SLTU:  control = 14'b0_00_01_1_0_0_1010_0_0;
+                `JR:    control = 14'b0_00_00_0_0_0_0000_0_0;
                 default: control = 0;
             endcase
         end

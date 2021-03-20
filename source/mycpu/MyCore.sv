@@ -19,7 +19,7 @@ module MyCore (
         .pcF(pcF), .instrF(instrF)
     );
 
-    logic [31:0] vsD, vtD, immD;
+    logic [31:0] vsD, vtD, immD, vsH, vtH;
     logic [4:0] rsD, rtD, rdD, shamtD;
     logic jD;
     logic [8:0] controlD;
@@ -46,7 +46,7 @@ module MyCore (
     execute Execute(
         .control(controlE[7:2]),
         .rd(rde), .shamt(shamte),
-        .vs(vse), .vt(vte), .imm(imme),
+        .vs(vsH), .vt(vtH), .imm(imme),
         .rdE(rdE), .outE(aluoutE), .vt(vtE)
     );
 
@@ -70,7 +70,7 @@ module MyCore (
     writeback WriteBack(
         .memtoreg(controlW[1]), .reg_write(controlW[8]),
         .rdM(rdw),
-        .ReadDataM(dataoutw), .ALUoutM(aluoutw),
+        .ReadDataM(dataoutM), .ALUoutM(aluoutw),
         .write_enable(write_enableW),
         .rdW(rdW),
         .ResultW(vW)
@@ -83,8 +83,8 @@ module MyCore (
         pcF <= 32'hbfc0_0000;
         instr <= 0;
         instrF <= 0;
-        {controlD, immD, rdD, vtD, vsD, rsD, rtD, jD} <= 0;
-        {controlE, rde, vse, vte, imme, vtE, rdE, aluoutE} <= 0;
+        {controlD, immD, rdD, vtD, vsD, rsD, rtD, jD, shamtD, vsH, vtH} <= 0;
+        {controlE, rde, vse, vte, imme, shamte, vtE, rdE, aluoutE} <= 0;
         {controlM, rdm, vtm, aluoutm, rdM, dataoutM, aluoutM} <= 0;
         {controlW, rdw, dataoutw, aluoutw, vW, rdW, write_enableW} <= 0;
     end 
@@ -95,19 +95,19 @@ module MyCore (
         aluoutw <= aluoutM;
 
         controlM <= controlE;
-        rde <= rdD;
-        vse <= vsD;
-        vte <= vtD;
-        imme <= immD;
+        rdm <= rdE;
+        vtm <= vtE;
+        aluoutm <= aluoutE;
         if(stall) begin
-            {controlE, vse, rde, imme, vte, vtE, rdE, aluoutE} <= 0;
+            {controlE, rde, vse, vte, imme, shamte, vtE, rdE, aluoutE} <= 0;
         end
         else begin
             controlE <= controlD;
             rde <= rdD;
             vse <= vsD;
-            vte <= vtE;
+            vte <= vtD;
             imme <= immE;
+            shamte <= shamtD;
             pc <= pcF;
             instr <= instrF;
         end
