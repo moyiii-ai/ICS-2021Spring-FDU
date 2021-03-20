@@ -9,7 +9,9 @@ module hazard(
 );
     logic 
     always_comb begin
-        if(rdE == rsD && op != `LW) 
+        if(rsD == 0)
+            vsH = 0;
+        else if(rdE == rsD) 
             vsH = aluoutE;
         else if(rdW == rsD) 
             vsH = vW;
@@ -17,11 +19,13 @@ module hazard(
             vsH = vsD;       
     end 
     always_comb begin
-        if(rdE == rtD && op != `LW) 
+        if(rtD == 0)
+            vtH = 0;
+        else if(rdE == rtD) 
             vtH = aluoutE;
         else if(rdW == rtD) 
             vtH = vW;
         else
-            vsH = vtD;       
+            vtH = vtD;       
     end 
 endmodule

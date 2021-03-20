@@ -79,6 +79,7 @@ module MyCore (
 
     hazard Hazard(
         .op(instr[31:26]),
+        .load(controlE[1]),
         .vsD(vsD), .vtD(vtD), .aluoutE(aluoutE), .vW(vW),
         .rdE(rdE), .rdW(rdW), .rsD(rsD), .rtD(rtD),
         .vsH(vsH), .vtH(vtH),
