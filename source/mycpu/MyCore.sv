@@ -14,7 +14,7 @@ module MyCore (
 
     fetch Fetch(
         .pc(pcD), .instr(instrD), .vs(vsD),
-        .j(jD), .clk(clk),
+        .j(jD), .clk(clk), .stall(stall),
         .iresp(iresp),
         .ireq(ireq),
         .pcF(pcF), .instrF(instrF)
@@ -91,7 +91,7 @@ module MyCore (
     );
 
     always_ff @(posedge clk) begin
-        if (resetn) begin
+        if (~resetn) begin
             pcD <= 32'hbfc0_0000;
             pcF <= 32'hbfc0_0000;
             pcE <= 32'hbfc0_0000;

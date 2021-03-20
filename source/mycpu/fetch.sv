@@ -2,7 +2,7 @@
 
 module fetch (
     input logic [31:0] pc, instr, vs,
-    input logic j, clk,
+    input logic j, clk, stall,
     input  ibus_resp_t iresp,
     output ibus_req_t  ireq,
     output logic [31:0] pcF, instrF
@@ -49,7 +49,8 @@ module fetch (
     end
 
     always_ff @(posedge clk) begin
-        pcF <= pcc;
+        if(!stall)
+            pcF <= pcc;
     end
     assign ireq.valid = 1;
     assign ireq.addr = pcF;
