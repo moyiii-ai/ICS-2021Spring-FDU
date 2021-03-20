@@ -10,6 +10,7 @@ module MyCore (
 );
     logic [31:0] pc, instr;
     logic [31:0] pcF, instrF;
+    logic stall;
 
     fetch Fetch(
         .pc(pc), .instr(instr), .vs(vsD),
@@ -76,6 +77,13 @@ module MyCore (
         .ResultW(vW)
     );
 
+    hazard Hazard(
+        .op(instr[31:26]),
+        .vsD(vsD), .vtD(vtD), .aluoutE(aluoutE), .vW(vW),
+        .rdE(rdE), .rdW(rdW), .rsD(rsD), .rtD(rtD),
+        .vsH(vsH), .vtH(vtH),
+        .stall(stall)
+    );
 
     always_ff @(posedge clk)
     if (resetn) begin
