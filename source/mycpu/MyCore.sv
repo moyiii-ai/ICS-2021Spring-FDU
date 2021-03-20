@@ -8,11 +8,12 @@ module MyCore (
     output dbus_req_t  dreq,
     input  dbus_resp_t dresp
 );
-    logic [31:0] pc, instr;
+    logic [31:0] pcD, instrD;
     logic [31:0] pcF, instrF;
+    logic [31:0] pcE, pcM, pcW;
 
     fetch Fetch(
-        .pc(pc), .instr(instr), .vs(vsD),
+        .pc(pcD), .instr(instrD), .vs(vsD),
         .j(jD),
         .iresp(iresp),
         .ireq(ireq),
@@ -32,7 +33,7 @@ module MyCore (
     );
 
     decode Decode(
-        .instr(instrF), .pc(pc),
+        .instr(instrF), .pc(pcD),
         .vs(vsHD), vt(vtHD),
         .j(jD),
         .controlD(controlD),
@@ -91,8 +92,11 @@ module MyCore (
 
     always_ff @(posedge clk) begin
         if (resetn) begin
-            pc <= 32'hbfc0_0000;
+            pcD <= 32'hbfc0_0000;
             pcF <= 32'hbfc0_0000;
+            pcE <= 32'hbfc0_0000;
+            pcM <= 32'hbfc0_0000;
+            pcW <= 32'hbfc0_0000;
             instr <= 0;
             instrF <= 0;
             {controlD, immD, rdD, vtD, vsD, rsD, rtD, jD, shamtD, vsH, vtH} <= 0;
@@ -102,19 +106,23 @@ module MyCore (
         end 
         else begin
             controlW <= controlM;
+            pcW <= pcM;
             rdw <= rdM;
             dataoutw <= dataoutM;
             aluoutw <= aluoutM;
 
             controlM <= controlE;
+            pcM <= pcE;
             rdm <= rdE;
             vtm <= vtE;
             aluoutm <= aluoutE;
             if(stall) begin
+                pcE <= 32'hbfc0_0000;
                 {controlE, rde, rse, rte, vse, vte, imme, shamte, vtE, rdE, aluoutE} <= 0;
             end
             else begin
                 controlE <= controlD;
+                pcE <= pcD;
                 rde <= rdD;
                 rse <= rsD;
                 rte <= rtD;
@@ -122,7 +130,7 @@ module MyCore (
                 vte <= vtD;
                 imme <= immE;
                 shamte <= shamtD;
-                pc <= pcF;
+                pcD <= pcF;
                 instr <= instrF;
             end
         end

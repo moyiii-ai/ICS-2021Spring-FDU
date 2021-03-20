@@ -1,0 +1,43 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/vivado/test1_naive/soc_sram_func/rtl/xilinx_ip/clk_pll/clk_pll_clk_wiz.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module clk_pll_clk_wiz
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/vivado/test1_naive/soc_sram_func/rtl/xilinx_ip/clk_pll/clk_pll.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module clk_pll
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/vivado/test1_naive/soc_sram_func/rtl/xilinx_ip/data_ram/sim/data_ram.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module data_ram
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/vivado/test1_naive/soc_sram_func/rtl/xilinx_ip/inst_ram/sim/inst_ram.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module inst_ram
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/vivado/test1_naive/soc_sram_func/rtl/BRIDGE/bridge_1x2.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module bridge_1x2
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/vivado/test1_naive/soc_sram_func/rtl/CONFREG/confreg.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module confreg
+INFO: [VRFC 10-2458] undeclared symbol conf_we, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/vivado/test1_naive/soc_sram_func/rtl/CONFREG/confreg.v:160]
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/vivado/test1_naive/soc_sram_func/rtl/soc_lite_top.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module soc_lite_top
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/util/DBusToSRAMx.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module DBusToSRAMx
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/util/IBusToSRAMx.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module IBusToSRAMx
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module MyCore
+INFO: [VRFC 10-2458] undeclared symbol vsD, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:15]
+INFO: [VRFC 10-2458] undeclared symbol jD, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:16]
+WARNING: [VRFC 10-2938] 'vsD' is already implicitly declared on line 15 [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:22]
+WARNING: [VRFC 10-2938] 'jD' is already implicitly declared on line 16 [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:24]
+INFO: [VRFC 10-2458] undeclared symbol rdW, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:28]
+INFO: [VRFC 10-2458] undeclared symbol write_enableW, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:29]
+INFO: [VRFC 10-2458] undeclared symbol vW, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:30]
+INFO: [VRFC 10-2458] undeclared symbol vsHD, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:36]
+INFO: [VRFC 10-2458] undeclared symbol vtHD, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:36]
+ERROR: [VRFC 10-1247] port connections cannot be mixed ordered and named [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:34]
+INFO: [VRFC 10-2458] undeclared symbol vsHe, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:49]
+INFO: [VRFC 10-2458] undeclared symbol vtHe, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:49]
+WARNING: [VRFC 10-3248] data object 'rdM' is already declared [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:54]
+WARNING: [VRFC 10-3703] second declaration of 'rdM' ignored [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:54]
+ERROR: [VRFC 10-4982] syntax error near ';' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:57]
+WARNING: [VRFC 10-2938] 'vW' is already implicitly declared on line 30 [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:66]
+WARNING: [VRFC 10-2938] 'rdW' is already implicitly declared on line 28 [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:67]
+WARNING: [VRFC 10-2938] 'write_enableW' is already implicitly declared on line 29 [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:68]
+WARNING: [VRFC 10-2938] 'vsHD' is already implicitly declared on line 36 [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:79]
+ERROR: [VRFC 10-2989] 'vsH' is not declared [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:98]
+ERROR: [VRFC 10-2989] 'immE' is not declared [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:123]
+ERROR: [VRFC 10-2865] module 'MyCore' ignored due to previous errors [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:3]
