@@ -7,7 +7,7 @@ module fetch (
     output ibus_req_t  ireq,
     output logic [31:0] pcF, instrF
 );
-    //pcc: selectpc pcF: Fetch pc:decode
+    //pcc: selectpc  pcF: Fetch  pc:decode
     logic [31:0] pcplus, pcc;
     assign pcplus = pc + 4;
 
