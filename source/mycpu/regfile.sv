@@ -1,6 +1,5 @@
 `include "common.svh"
 
-typedef logic[31:0] word_t;
 typedef logic[4:0] creg_addr_t;
 
 module regfile(

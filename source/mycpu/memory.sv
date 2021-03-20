@@ -9,12 +9,12 @@ module memory(
     output logic [4:0] rdM,
     output logic [31:0] ReadData, ALUoutM
 );
-    assign req.vaild = mem_write | memtoreg;
+    assign req.valid = mem_write | memtoreg;
     assign req.addr = addr;
-    assign req.size = 4;
-    assign req.strobe = 4{mem_write};
+    assign req.size = MSIZE4;
+    assign req.strobe = {4{mem_write}};
     assign req.data = WriteData;
     assign ReadData = resp.data;
-    assign ALUoutM = ALUoutE;
+    assign ALUoutM = addr;
     assign rdM = rdE;
 endmodule

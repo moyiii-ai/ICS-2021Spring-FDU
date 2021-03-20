@@ -16,6 +16,7 @@ sv xil_defaultlib  --include "../../../../../../../../../source/include" --inclu
 "../../../../../../../../../source/mycpu/alu.sv" \
 "../../../../../../../../../source/mycpu/decode.sv" \
 "../../../../../../../../../source/mycpu/execute.sv" \
+"../../../../../../../../../source/mycpu/fetch.sv" \
 "../../../../../../../../../source/mycpu/hazard.sv" \
 "../../../../../../../../../source/mycpu/memory.sv" \
 "../../../../../../../../../source/mycpu/mycpu_top.sv" \

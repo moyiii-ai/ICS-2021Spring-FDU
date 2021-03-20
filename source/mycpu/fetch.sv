@@ -2,7 +2,7 @@
 
 module fetch (
     input logic [31:0] pc, instr, vs,
-    input j;
+    input logic j, clk,
     input  ibus_resp_t iresp,
     output ibus_req_t  ireq,
     output logic [31:0] pcF, instrF
@@ -16,7 +16,7 @@ module fetch (
     logic [31:0] jpc, bpc, sign_imm;
     assign instr_index = instr[25:0];
     assign imm = instr[15:0];
-    assign sign_imm = {16{imm[15]}, imm};
+    assign sign_imm = {{16{imm[15]}}, imm};
 
     assign jpc = {pcplus[31:28], instr_index, 2'b00};
     assign bpc = pcplus + (sign_imm << 2);

@@ -15,6 +15,5 @@ module writeback(
             ResultW = ReadDataM;
         else 
             ResultW = ALUoutM;
-        end
     end
 endmodule

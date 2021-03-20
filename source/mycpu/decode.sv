@@ -40,7 +40,7 @@ module decode (
         else begin
             case(op)
                 `ADDIU: control = 14'b1_00_10_1_0_1_0000_0_0;
-                `ADDI:  control = 14'b0_00_10_1_0_1_0010_0_0;
+                `ANDI:  control = 14'b0_00_10_1_0_1_0010_0_0;
                 `ORI:   control = 14'b0_00_10_1_0_1_0011_0_0;
                 `XORI:  control = 14'b0_00_10_1_0_1_0101_0_0;
                 `SLTI:  control = 14'b1_00_10_1_0_1_1001_0_0;
@@ -107,7 +107,7 @@ module extension (
 );
     always_comb begin
         if(sign_extend)
-            imm = {16{immI[15]}, immI};
+            imm = {{16{immI[15]}}, immI};
         else
             imm = {16'b0, immI};
     end

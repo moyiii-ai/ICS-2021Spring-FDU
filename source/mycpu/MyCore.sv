@@ -14,7 +14,7 @@ module MyCore (
 
     fetch Fetch(
         .pc(pcD), .instr(instrD), .vs(vsD),
-        .j(jD),
+        .j(jD), .clk(clk),
         .iresp(iresp),
         .ireq(ireq),
         .pcF(pcF), .instrF(instrF)
@@ -34,7 +34,7 @@ module MyCore (
 
     decode Decode(
         .instr(instrF), .pc(pcD),
-        .vs(vsHD), vt(vtHD),
+        .vs(vsHD), .vt(vtHD),
         .j(jD),
         .controlD(controlD),
         .rsD(rsD), .rtD(rtD), .rdD(rdD), .shamtD(shamtD),
@@ -48,20 +48,20 @@ module MyCore (
         .control(controlE[7:2]),
         .rd(rde), .shamt(shamte),
         .vs(vsHe), .vt(vtHe), .imm(imme),
-        .rdE(rdE), .outE(aluoutE), .vt(vtE)
+        .rdE(rdE), .outE(aluoutE), .vtE(vtE)
     );
 
     logic [31:0] rdM, dataoutM, aluoutM, aluoutm, vtm;
     logic [4:0] rdM, rdm;
     logic [8:0] controlM;
     memory Memory(
-        .memtoreg(controlM[1]), .mem_write(controlM[0]);
+        .memtoreg(controlM[1]), .mem_write(controlM[0]),
         .rdE(rdm),
         .WriteData(vtm), .addr(aluoutm),
         .resp(dresp),
         .req(dreq),
         .rdM(rdM),
-        .ReadData(dataoutM), .aluoutM(aluoutM)
+        .ReadData(dataoutM), .ALUoutM(aluoutM)
     );
 
     logic [31:0] vW, dataoutw, aluoutw;
@@ -80,8 +80,8 @@ module MyCore (
     logic [31:0] vsHD, vtHD, vsHe, vtHe;
     logic stall;
     hazard Hazard(
-        .op(instr[31:26]),
-        .loadE(controlE[1]), .regWriteE(controlE[8]),
+        .op(instrD[31:26]),
+        .loadE(controlE[1]), .regWriteE(controlE[8]), .jD(jD),
         .rde(rde), .rsD(rsD), .rtD(rtD),
         .rdm(rdm), .rdW(rdW), .rse(rse), .rte(rte),
         .vsD(vsD), .vtD(vtD), .vse(vse), .vte(vte),
@@ -97,10 +97,10 @@ module MyCore (
             pcE <= 32'hbfc0_0000;
             pcM <= 32'hbfc0_0000;
             pcW <= 32'hbfc0_0000;
-            instr <= 0;
+            instrD <= 0;
             instrF <= 0;
-            {controlD, immD, rdD, vtD, vsD, rsD, rtD, jD, shamtD, vsH, vtH} <= 0;
-            {controlE, rde, rse, rte, vse, vte, imme, shamte, vtE, rdE, aluoutE} <= 0;
+            {controlD, immD, rdD, vtD, vsD, rsD, rtD, jD, shamtD, vsHD, vtHD} <= 0;
+            {controlE, rde, rse, rte, vse, vte, vsHe, vtHe, imme, shamte, vtE, rdE, aluoutE} <= 0;
             {controlM, rdm, vtm, aluoutm, rdM, dataoutM, aluoutM} <= 0;
             {controlW, rdw, dataoutw, aluoutw, vW, rdW, write_enableW} <= 0;
         end 
@@ -118,7 +118,7 @@ module MyCore (
             aluoutm <= aluoutE;
             if(stall) begin
                 pcE <= 32'hbfc0_0000;
-                {controlE, rde, rse, rte, vse, vte, imme, shamte, vtE, rdE, aluoutE} <= 0;
+                {controlE, rde, rse, rte, vse, vte, vsHe, vtHe, imme, shamte, vtE, rdE, aluoutE} <= 0;
             end
             else begin
                 controlE <= controlD;
@@ -128,10 +128,10 @@ module MyCore (
                 rte <= rtD;
                 vse <= vsD;
                 vte <= vtD;
-                imme <= immE;
+                imme <= immD;
                 shamte <= shamtD;
                 pcD <= pcF;
-                instr <= instrF;
+                instrD <= instrF;
             end
         end
     end

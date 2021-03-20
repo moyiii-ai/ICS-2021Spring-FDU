@@ -17,7 +17,7 @@ module alu (
             4'b0110: out = in2 << in1;
             4'b0111: out = $signed(in2) >>> in1; //arithmetic
             4'b1000: out = in2 >> in1;  //logical
-            4'b1001: out = {31'b0, $signed(in1) < $signed(in2)} //signed
+            4'b1001: out = {31'b0, $signed(in1) < $signed(in2)}; //signed
             4'b1010: out = {31'b0, in1 < in2}; //unsigned
             
 

@@ -2,7 +2,7 @@
 
 module hazard(
     input logic [5:0] op,   
-    input logic loadE, regWriteE, 
+    input logic loadE, regWriteE, jD, 
     input logic [4:0] rde, rsD, rtD,
     input logic [4:0] rdm, rdW, rse, rte, 
     input logic [31:0] vsD, vtD, vse, vte,
@@ -17,12 +17,12 @@ module hazard(
     assign stall = stallb1 | stallb2 | stallw;
 
     mux1 muxs1(
-        .re(rse), .rm(rdm), .rw(rdW),
+        .re(rse), .rm(rdm), .rW(rdW),
         .aluoutm(aluoutm), .vW(vW), .ve(vse),
         .vHe(vsHe)
     );
     mux1 muxt1(
-        .re(rte), .rm(rdm), .rw(rdW),
+        .re(rte), .rm(rdm), .rW(rdW),
         .aluoutm(aluoutm), .vW(vW), .ve(vte),
         .vHe(vtHe)
     );
@@ -53,7 +53,7 @@ module mux1(
         else if(re == rW) 
             vHe = vW;
         else
-            vHe = vtD;       
+            vHe = ve;       
     end 
 endmodule
 
