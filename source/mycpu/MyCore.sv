@@ -50,7 +50,7 @@ module MyCore (
         .rdE(rdE), .outE(aluoutE), .vtE(vtE)
     );
 
-    logic [31:0] rdM, dataoutM, aluoutM, aluoutm, vtm;
+    logic [31:0] dataoutM, aluoutM, aluoutm, vtm;
     logic [4:0] rdM, rdm;
     logic [8:0] controlM;
     memory Memory(
