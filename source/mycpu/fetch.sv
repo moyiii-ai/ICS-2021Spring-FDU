@@ -1,5 +1,5 @@
 `include "common.svh"
-`include "mycpu/icode.svh"
+`include "source/mycpu/icode.svh"
 
 module fetch (
     input logic [31:0] pc, instr, vs,
