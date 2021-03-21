@@ -2,7 +2,7 @@
 
 module hazard(
     input logic [5:0] op, funct,  
-    input logic loadE, regWriteE, 
+    input logic loadE, loadM, regWriteE, 
     input logic [4:0] rde, rsD, rtD,
     input logic [4:0] rdm, rdW, rse, rte, 
     input logic [31:0] vsD, vtD, vse, vte,
@@ -14,7 +14,7 @@ module hazard(
     logic stallb1, stallb2, stallw, stallj;
     assign br = (op == `BEQ) | (op == `BNE);
     assign stallb1 = br & regWriteE & ((rde == rsD) | (rde == rtD));
-    assign stallb2 = br & loadE & ((rdm == rsD) | (rdm == rtD));
+    assign stallb2 = br & (loadE | loadM) & ((rdm == rsD) | (rdm == rtD));
     assign stallw = loadE & ((rde == rsD) | (rde == rtD));
     assign stallj = (op == `RTYPE) & (funct == `JR) & regWriteE & (rde == rsD);
     assign stall = stallb1 | stallb2 | stallw | stallj;
