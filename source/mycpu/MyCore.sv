@@ -92,10 +92,15 @@ module MyCore (
     always_ff @(posedge clk) begin
         if (~resetn) begin
             pcD <= 32'hbfc0_0000;
-            {controlD, immD, rdD, vtD, vsD, rsD, rtD, jD, shamtD, vsHD, vtHD} <= 0;
+            /*{controlD, immD, rdD, vtD, vsD, rsD, rtD, jD, shamtD, vsHD, vtHD} <= 0;
             {controlE, rde, rse, rte, vse, vte, vsHe, vtHe, imme, shamte, vtE, rdE, aluoutE} <= 0;
             {controlM, rdm, vtm, aluoutm, rdM, dataoutM, aluoutM} <= 0;
-            {controlW, rdw, dataoutw, aluoutw, vW, rdW, write_enableW} <= 0;
+            {controlW, rdw, dataoutw, aluoutw, vW, rdW, write_enableW} <= 0;*/
+            
+            //{controlD, immD, rdD, vtD, vsD, rsD, rtD, jD, shamtD, vsHD, vtHD} <= 0;
+            {controlE, rde, rse, rte, vse, vte, vsHe, vtHe, imme, shamte} <= 0;
+            {controlM, rdm, vtm, aluoutm} <= 0;
+            {controlW, rdw, dataoutw, aluoutw} <= 0;
         end 
         else begin
             controlW <= controlM;
@@ -111,7 +116,7 @@ module MyCore (
             aluoutm <= aluoutE;
             if(stall) begin
                 pcE <= 32'hbfc0_0000;
-                {controlE, rde, rse, rte, vse, vte, vsHe, vtHe, imme, shamte, vtE, rdE, aluoutE} <= 0;
+                {controlE, rde, rse, rte, vse, vte, vsHe, vtHe, imme, shamte} <= 0;
             end
             else begin
                 controlE <= controlD;
