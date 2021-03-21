@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>19307130296.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="%E4%BA%94%E7%BA%A7%E6%B5%81%E6%B0%B4%E7%BA%BF-mips-cpu-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A">五级流水线 MIPS CPU 实验报告</h1>
+<p>计算机科学与技术</p>
+<p>19307130296</p>
+<p>孙若诗</p>
+<h2 id="1%E5%AE%9E%E7%8E%B0%E6%8C%87%E4%BB%A4">1、实现指令</h2>
+<h3 id="11-r%E5%9E%8B%E6%8C%87%E4%BB%A4">1.1 R型指令</h3>
+<p>R-type = op(6) + rs(5) + rt(5) + rd(5) + shamt(5) + funct(6)</p>
+<ul>
+<li>addu : GPR[rd] = GPR[rs] + GPR[rt]</li>
+<li>subu : GPR[rd] = GPR[rs] - GPR[rt]</li>
+<li>and : GPR[rd] = GPR[rs] &amp; GPR[rt]</li>
+<li>or : GPR[rd] = GPR[rs] | GPR[rt]</li>
+<li>nor : GPR[rd] = ~(GPR[rs] | GPR[rt])</li>
+<li>xor : GPR[rd] = GPR[rs] ^ GPR[rt]</li>
+<li>sll : GPR[rd] = GPR[rt] &lt;&lt; shamt</li>
+<li>sra : GPR[rd] = GPR[rt] &gt;&gt;&gt; shamt (arithmetic)</li>
+<li>srl : GPR[rd] = GPR[rt] &gt;&gt; shamt (logical)</li>
+<li>slt : GPR[rd] = (GPR[rs] &lt; GPR[rt]) (signed)</li>
+<li>sltu : GPR[rd] = (GPR[rs] &lt; GPR[rt]) (unsigned)</li>
+<li>jr : pc = GPR[rs]</li>
+</ul>
+<h3 id="12-i%E5%9E%8B%E6%8C%87%E4%BB%A4">1.2 I型指令</h3>
+<p>I-type = op(6) + rs(5) + rt(5) + imm(16)</p>
+<ul>
+<li>addiu : GPR[rt] = GPR[rs] + sign_extend(imm)</li>
+<li>andi : GPR[rt] = GPR[rs] &amp; zero_extend(imm)</li>
+<li>ori : GPR[rt] = GPR[rs] | zero_extend(imm)</li>
+<li>xori : GPR[rt] = GPR[rs] ^ zero_extend(imm)</li>
+<li>slti : GPR[rt] = (GPR[rs] &lt; imm) (signed)</li>
+<li>sltiu : GPR[rt] = (GPR[rs] &lt; imm) (unsigned)</li>
+<li>lui : GPR[rt] = imm &lt;&lt; 16</li>
+<li>beq : if(GPR[rs] == GPR[rt])  pc += 4 + imm &lt;&lt; 2</li>
+<li>bne : if(GPR[rs] != GPR[rt])
+pc += imm &lt;&lt; 2</li>
+<li>lw : GPR[rt] = mem[GPR[rs] + sign_extend(offset)]</li>
+<li>sw : mem[GPR[rs] + sign_extend(offset)] = GPR[rt]</li>
+</ul>
+<h3 id="13-j%E5%9E%8B%E6%8C%87%E4%BB%A4">1.3 J型指令</h3>
+<p>J-type = op(6) + instr_index(26)</p>
+<ul>
+<li>j : pc = (pc + 4)[31:28] + (instr_index &lt;&lt; 2)</li>
+<li>jal : GPR[31] = pc + 8, pc = (pc + 4)[31:28] + (instr_index &lt;&lt; 2)</li>
+</ul>
+<h2 id="2%E9%98%B6%E6%AE%B5%E5%88%86%E6%9E%90">2、阶段分析</h2>
+<p>参考《数字设计和计算机体系结构》中五级流水线设计
+<img src="MIPS5.png" alt="avator"></p>
+<h3 id="21-fetch">2.1 Fetch</h3>
+<p>这一阶段选择下一条执行的指令地址，并与指令内存交互。SelectPC阶段整合在fetch内，但SelectPC计算出的PC要在时钟上升沿才进入fetch。</p>
+<h3 id="22-decode">2.2 Decode</h3>
+<p>这一阶段的主要任务是：指令解码，生成控制信号、从 Regfile（寄存器文件堆）中读取数据、判断是否跳转。</p>
+<p>decode内部控制信号为14位，构成方式为sign_extend(1) + imm_type(2) + reg_dst(2) + reg_write(1) + alu_shamt(1) + alu_imm(1) + alu_funct(4) + memtoreg(1) + mem_write(1)。由于前五位信号仅在decode内部使用，输出控制信号为9位。</p>
+<p>首先根据op和funct生成控制信号，从instr获取rsD、rtD、st_imm和shamtD，hazard转发生成修正值rsHD和rtHD。根据reg_dst确定写入寄存器的地址，sign_extend后根据imm_type确定立即数的运算值。</p>
+<h3 id="23-execute">2.3 Execute</h3>
+<p>这一阶段的主要任务是完成计算，围绕ALU展开。</p>
+<p>Execute模块的输入数据同样经过hazard转发。首先根据alu_shamt、alu_imm处理出ALU的两个参数，例化ALU进行运算。</p>
+<p>rd和vt的值不发生改变，仅传向下一个阶段。</p>
+<h3 id="24-memory">2.4 Memory</h3>
+<p>这一阶段与Data Memory进行数据交互。</p>
+<h3 id="25-write-back">2.5 Write Back</h3>
+<p>这一阶段向regfile写数据。</p>
+<p>由于regfile已经例化，本模块仅需将reg_write传递给write_enable，将rdM传递给rdW，再根据memtoreg选择写入变量为ReadDataW还是ALUout即可。</p>
+<h3 id="26-regfile">2.6 Regfile</h3>
+<p>这一模块用于读写寄存器。有一个写端口，两个读端口，其中读地址来自D阶段，写地址来自W阶段。写部分是时序逻辑，读部分是组合逻辑，并选择更新过后的结果。</p>
+<h3 id="27-hazard">2.7 Hazard</h3>
+<p>这一阶段进行转发和阻塞。具体条件详见5.2、5.3部分。</p>
+<h2 id="3%E5%AE%9E%E9%AA%8C%E7%8E%B0%E8%B1%A1">3、实验现象</h2>
+<p><img src="sim.png" alt="avator">
+<img src="verilator.png" alt="avator">
+<img src="board.jpg" alt="avator"></p>
+<h2 id="4-%E4%BF%AE%E6%AD%A3bug%E5%88%97%E8%A1%A8">4. 修正BUG列表</h2>
+<ol>
+<li>LW在M阶段同样需要阻塞，hazard输入增加loadM信号。</li>
+<li>ADDIU中imm同样为符号扩展，只是比较时作为无符号数。</li>
+<li>strobe为4位信号，需要将一位的mem_write信号重复四次。</li>
+<li>JR进入D阶段时，若相关寄存器处于E阶段将被写，同样需要stall（遵循E阶段不作为转发来源的原则）。</li>
+<li>resetn初始化与组合逻辑产生多驱动。若组合逻辑能自然赋值就不要重复操作，时序逻辑中只初始化那些CPU运行后也需要在时序逻辑中赋值的内容，也即EMW阶段的输入信号。</li>
+<li>SelectPC计算跳转pc使用的是D阶段的pc，因此开始也将D阶段pc赋初值，但是这样会导致第一条指令被重复执行。实际上第一周期必定不会跳转，只需要初始化instrF即可。</li>
+<li>除了MyCore中控制的时序逻辑需要stall，fetch中更新pc和instr也需要被阻塞。</li>
+<li>logic _unused_ok = &amp;{iresp……}; 用于在verilator中解决必要的unused warning。</li>
+<li>verilator中引用库需要加文件路径。</li>
+<li>变量重复定义在vivado中只是Warning，使用verilator才会得到Error提醒。</li>
+<li>SW阶段是不修改寄存器的，reg_dst设为0，避免hazard错误地转发E阶段结果。</li>
+</ol>
+<h2 id="5%E8%AE%A8%E8%AE%BA">5、讨论</h2>
+<ol>
+<li>不同指令需要用到的流水线阶段可能不同：加法指令似乎不需要经过 Memory 阶段。能让它跳过 M 阶段吗？</li>
+</ol>
+<ul>
+<li>可以但很没必要。在其他指令仍然为五级流水的情况下，增加E到W的数据通路只会让电路结构更加复杂。何况加法跳过了M阶段，后续指令仍在E阶段，并没有节省整体运行时间。如果一开始就对指令分类执行，可以有不同流水级数的实现，但是又要考虑在不同流水线之间传递数据的成本。</li>
+</ul>
+<ol start="2">
+<li>转发部分：哪些指令写通用寄存器？电路图中的哪些数据线可作为转发来源？转发条件是什么？优先级是什么？</li>
+</ol>
+<ul>
+<li>除了SW、BEQ、BNE、J、JR，几乎其他所有指令都要写通用寄存器。</li>
+<li>电路图中M阶段接受的ALUout和W阶段将写入寄存器的数据可作为转发来源。为什么不采用E阶段的结果？此时还不能确定数据已经准备好，毕竟E阶段的输入也需要转发。</li>
+<li>转发条件是这个数据将被写入寄存器，且写入地址等于D或E阶段访问的地址。E阶段需要转发显然，D阶段则是为了及时确定分支是否跳转。</li>
+<li>Memory比WriteBack优先级更高，因为它包含了更新的执行指令的结果。</li>
+</ul>
+<ol start="3">
+<li>冲突阻塞部分：D 阶段取数据，E、M、W 阶段的写数据会造成冲突。哪些情况应当阻塞流水线？</li>
+</ol>
+<ul>
+<li>LW更新了寄存器，但是寄存器的值要到W阶段开始才获得（M读取+内存延迟），此时D阶段取数据会产生冲突。</li>
+<li>D阶段要产生是否跳转的信号，但E阶段还在对相关寄存器进行计算，也就是寄存器数据还没有准备好，需要阻塞。</li>
+<li>JR处于D阶段，此时若相关寄存器处于E阶段，需要阻塞一周期。</li>
+</ul>
+<ol start="4">
+<li>延迟槽是如何起作用的？</li>
+</ol>
+<ul>
+<li>第一周期：fetch接受pc1；</li>
+<li>第二周期：pc1进入decode，fetch接受pc2；此时pc1形成的pc进入selectpc。</li>
+<li>第三周期：pc1进入execute，pc2进入decode，pc1形成的pc进入fetch。</li>
+<li>因此如果pc1要求跳转，它后续一条指令pc2仍会照常执行，直到再下一条指令才做出反应。这就是“delay slot”的机制。</li>
+<li>没有指令被错误地执行，代价是需要在decode阶段决策是否相等，要求寄存器变量的值被及时转发。</li>
+</ul>
+<ol start="5">
+<li>内存延迟解决方法</li>
+</ol>
+<ul>
+<li>直接将instrF接入D和Regfile，将dataoutM接入W。需要注意的是，instrF应与D阶段pc保持一致，因此stall时F阶段不要读指令内存。</li>
+</ul>
+<ol start="6">
+<li>既然LW已经stall，W阶段转发的意义是什么（W阶段才确定的数据不是只有LW吗）？</li>
+</ol>
+<ul>
+<li>流水线每个阶段的数据都是不同的，可能刚进入decode的指令和W阶段寄存器冲突，此时转发不是由于W阶段刚得到数据，而是因为decode刚得到指令。</li>
+</ul>
+<ol start="7">
+<li>
+<p>$signed()是强制类型转换，signed'是类型声明，两种写法是等价的。</p>
+</li>
+<li>
+<p>进一步体会到了硬件编程和高级语言的不同。因为一个变量只允许assign一次，所以之前的结果不能覆盖，只能再新建变量赋值，对应到硬件上就又增加了一层。如果结构预先未经过审慎设计，电路和代码都会过分复杂。</p>
+</li>
+<li>
+<p>感觉自己学习本实验相关知识的顺序有些问题。第一周安装环境+读文档，第二周读了数逻和ICS上下的各册课本相关部分，虽然对流水线结构有浅显了解，但是自己实现还是毫无头绪。直到最后一周开始对照电路图和示例代码，从E阶段写起，到D阶段control设计就清晰许多，完成SelectPC后完全理解了流水线的各种工作细节，再去读课本才感到通透。脱离实践的理论意义毕竟有限，何况文字也本来是用来解释而非规定系统的，编程语言在这方面效果更佳。</p>
+</li>
+<li>
+<p>感谢老师和各位助教学长的指导。争取下次不做ddl战士。</p>
+</li>
+</ol>
+
+</body>
+</html>
