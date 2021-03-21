@@ -44,12 +44,12 @@ module decode (
                 `ORI:   control = 14'b0_00_10_1_0_1_0011_0_0;
                 `XORI:  control = 14'b0_00_10_1_0_1_0101_0_0;
                 `SLTI:  control = 14'b1_00_10_1_0_1_1001_0_0;
-                `SLTIU: control = 14'b0_00_10_1_0_1_1010_0_0;
+                `SLTIU: control = 14'b1_00_10_1_0_1_1010_0_0;
                 `LUI:   control = 14'b0_01_10_1_0_1_1111_0_0;
                 `BEQ:   control = 14'b1_10_00_0_0_1_1110_0_0;
                 `BNE:   control = 14'b1_10_00_0_0_1_1110_0_0;
                 `LW:    control = 14'b1_00_10_1_0_1_0000_1_0;
-                `SW:    control = 14'b1_00_10_0_0_1_0000_0_1;
+                `SW:    control = 14'b1_00_00_0_0_1_0000_0_1;
                 `J:     control = 14'b0_00_00_0_0_0_0000_0_0;
                 `JAL:   control = 14'b0_11_11_1_0_1_1111_0_0;
                 default: control = 0;
@@ -58,6 +58,7 @@ module decode (
     end
 
     logic [15:0] st_imm;
+    logic [4:0] rd;
     assign rsD = instr[25:21];
     assign rtD = instr[20:16];
     assign rd = instr[15:11];

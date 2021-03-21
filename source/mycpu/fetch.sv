@@ -55,7 +55,7 @@ module fetch (
         else if(~stall)
             pcF <= pcc;
     end
-    assign ireq.valid = 1;
+    assign ireq.valid = resetn & (~stall);
     assign ireq.addr = pcF;
     assign instrF = iresp.data;
     

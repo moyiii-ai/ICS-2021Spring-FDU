@@ -1,8 +1,8 @@
 `include "common.svh"
 
 module hazard(
-    input logic [5:0] op,   
-    input logic loadE, regWriteE, jD, 
+    input logic [5:0] op, funct,  
+    input logic loadE, regWriteE, 
     input logic [4:0] rde, rsD, rtD,
     input logic [4:0] rdm, rdW, rse, rte, 
     input logic [31:0] vsD, vtD, vse, vte,
@@ -10,11 +10,14 @@ module hazard(
     output logic [31:0] vsHD, vtHD, vsHe, vtHe,
     output logic stall
 );
-    logic stallb1, stallb2, stallw;
-    assign stallb1 = jD & regWriteE & ((rde == rsD) | (rde == rtD));
-    assign stallb2 = jD & loadE & ((rdm == rsD) | (rdm == rtD));
+    logic br;
+    logic stallb1, stallb2, stallw, stallj;
+    assign br = (op == `BEQ) | (op == `BNE);
+    assign stallb1 = br & regWriteE & ((rde == rsD) | (rde == rtD));
+    assign stallb2 = br & loadE & ((rdm == rsD) | (rdm == rtD));
     assign stallw = loadE & ((rde == rsD) | (rde == rtD));
-    assign stall = stallb1 | stallb2 | stallw;
+    assign stallj = (op == `RTYPE) & (funct == `JR) & regWriteE & (rde == rsD);
+    assign stall = stallb1 | stallb2 | stallw | stallj;
 
     mux1 muxs1(
         .re(rse), .rm(rdm), .rW(rdW),
