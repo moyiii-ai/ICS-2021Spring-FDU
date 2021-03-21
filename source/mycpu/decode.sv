@@ -52,6 +52,7 @@ module decode (
                 `SW:    control = 14'b1_00_10_0_0_1_0000_0_1;
                 `J:     control = 14'b0_00_00_0_0_0_0000_0_0;
                 `JAL:   control = 14'b0_11_11_1_0_1_1111_0_0;
+                default: control = 0;
             endcase
         end
     end
@@ -77,6 +78,7 @@ module decode (
             2'b01: rdD = rd;
             2'b10: rdD = rtD;
             2'b11: rdD = 31;
+            default: rdD = 0;
         endcase
     end
 
@@ -92,7 +94,8 @@ module decode (
             2'b00: immD = ext_imm;
             2'b01: immD = ext_imm << 16;
             2'b10: immD = ext_imm << 2;
-            2'b11: immD = pc + 4;
+            2'b11: immD = pc + 8;
+            default: immD = ext_imm;
         endcase 
     end
     

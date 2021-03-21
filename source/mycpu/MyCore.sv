@@ -8,13 +8,12 @@ module MyCore (
     output dbus_req_t  dreq,
     input  dbus_resp_t dresp
 );
-    logic [31:0] pcD, instrD;
+    logic [31:0] pcD, pcE, pcM, pcW;
     logic [31:0] pcF, instrF;
-    logic [31:0] pcE, pcM, pcW;
 
     fetch Fetch(
-        .pc(pcD), .instr(instrD), .vs(vsD),
-        .j(jD), .clk(clk), .stall(stall),
+        .pc(pcD), .instr(instrF), .vs(vsD),
+        .j(jD), .clk(clk), .stall(stall), .resetn(resetn),
         .iresp(iresp),
         .ireq(ireq),
         .pcF(pcF), .instrF(instrF)
@@ -80,7 +79,7 @@ module MyCore (
     logic [31:0] vsHD, vtHD, vsHe, vtHe;
     logic stall;
     hazard Hazard(
-        .op(instrD[31:26]),
+        .op(instrF[31:26]),
         .loadE(controlE[1]), .regWriteE(controlE[8]), .jD(jD),
         .rde(rde), .rsD(rsD), .rtD(rtD),
         .rdm(rdm), .rdW(rdW), .rse(rse), .rte(rte),
@@ -93,12 +92,6 @@ module MyCore (
     always_ff @(posedge clk) begin
         if (~resetn) begin
             pcD <= 32'hbfc0_0000;
-            pcF <= 32'hbfc0_0000;
-            pcE <= 32'hbfc0_0000;
-            pcM <= 32'hbfc0_0000;
-            pcW <= 32'hbfc0_0000;
-            instrD <= 0;
-            instrF <= 0;
             {controlD, immD, rdD, vtD, vsD, rsD, rtD, jD, shamtD, vsHD, vtHD} <= 0;
             {controlE, rde, rse, rte, vse, vte, vsHe, vtHe, imme, shamte, vtE, rdE, aluoutE} <= 0;
             {controlM, rdm, vtm, aluoutm, rdM, dataoutM, aluoutM} <= 0;
@@ -131,7 +124,6 @@ module MyCore (
                 imme <= immD;
                 shamte <= shamtD;
                 pcD <= pcF;
-                instrD <= instrF;
             end
         end
     end
