@@ -63,7 +63,7 @@ module MyCore (
         .ReadData(dataoutM), .ALUoutM(aluoutM)
     );
 
-    logic [31:0] vW, dataoutw, aluoutw;
+    logic [31:0] vW, aluoutw;
     logic [4:0] rdW, rdw;
     logic write_enableW;
     logic [8:0] controlW;
@@ -94,13 +94,12 @@ module MyCore (
         if (~resetn) begin
             {controlE, rde, rse, rte, vse, vte, imme, shamte} <= 0;
             {controlM, rdm, vtm, aluoutm} <= 0;
-            {controlW, rdw, dataoutw, aluoutw} <= 0;
+            {controlW, rdw, aluoutw} <= 0;
         end 
         else begin
             controlW <= controlM;
             pcW <= pcM;
             rdw <= rdM;
-            dataoutw <= dataoutM;
             aluoutw <= aluoutM;
 
             controlM <= controlE;
@@ -130,5 +129,5 @@ module MyCore (
     // remove following lines when you start
     /*assign ireq = '0;
     assign dreq = '0;*/
-    logic _unused_ok = &{pcW, dataoutw, controlW};
+    logic _unused_ok = &{pcW, controlW};
 endmodule
