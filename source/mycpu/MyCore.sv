@@ -129,6 +129,6 @@ module MyCore (
 
     // remove following lines when you start
     /*assign ireq = '0;
-    assign dreq = '0;
-    logic _unused_ok = &{iresp, dresp};*/
+    assign dreq = '0;*/
+    logic _unused_ok = &{pcW, dataoutw, controlW};
 endmodule

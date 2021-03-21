@@ -59,5 +59,7 @@ module fetch (
     assign ireq.valid = resetn & (~stall);
     assign ireq.addr = pcF;
     assign instrF = iresp.data;
+
+    logic _unused_ok = &{iresp};
     
 endmodule

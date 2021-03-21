@@ -17,4 +17,7 @@ module memory(
     assign ReadData = resp.data;
     assign ALUoutM = addr;
     assign rdM = rdE;
+
+    logic _unused_ok = &{resp};
+
 endmodule
