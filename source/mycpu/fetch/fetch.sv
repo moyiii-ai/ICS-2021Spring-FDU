@@ -1,5 +1,5 @@
 `include "common.svh"
-`include "source/mycpu/icode.svh"
+`include "icode.svh"
 
 module fetch (
     input logic [31:0] pc, instr, vs,
@@ -56,7 +56,7 @@ module fetch (
         else if(~stall)
             pcF <= pcc;
     end
-    assign ireq.valid = resetn & (~stall);
+    assign ireq.valid = ~stall;
     assign ireq.addr = pcF;
     assign instrF = iresp.data;
 

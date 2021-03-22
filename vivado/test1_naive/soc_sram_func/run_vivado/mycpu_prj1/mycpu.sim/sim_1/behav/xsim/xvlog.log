@@ -14,8 +14,6 @@ INFO: [VRFC 10-2458] undeclared symbol vW, assumed default net type wire [C:/Use
 INFO: [VRFC 10-2458] undeclared symbol vtHD, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:36]
 INFO: [VRFC 10-2458] undeclared symbol vsHe, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:49]
 INFO: [VRFC 10-2458] undeclared symbol vtHe, assumed default net type wire [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:49]
-WARNING: [VRFC 10-3248] data object 'rdM' is already declared [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:54]
-WARNING: [VRFC 10-3703] second declaration of 'rdM' ignored [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:54]
 WARNING: [VRFC 10-2938] 'vW' is already implicitly declared on line 30 [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:66]
 WARNING: [VRFC 10-2938] 'rdW' is already implicitly declared on line 28 [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:67]
 WARNING: [VRFC 10-2938] 'write_enableW' is already implicitly declared on line 29 [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:68]
@@ -23,25 +21,27 @@ WARNING: [VRFC 10-2938] 'vsHD' is already implicitly declared on line 15 [C:/Use
 WARNING: [VRFC 10-2938] 'stall' is already implicitly declared on line 16 [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/MyCore.sv:80]
 INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/SRAMTop.sv" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module SRAMTop
-INFO: [VRFC 10-311] analyzing module translation
-INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/alu.sv" into library xil_defaultlib
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/execute/alu.sv" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module alu
-INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode.sv" into library xil_defaultlib
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv" into library xil_defaultlib
+ERROR: [VRFC 10-3195] cannot open include file 'source/mycpu/icode.svh' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:2]
 INFO: [VRFC 10-311] analyzing module decode
-INFO: [VRFC 10-311] analyzing module extension
-INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/execute.sv" into library xil_defaultlib
-INFO: [VRFC 10-311] analyzing module execute
-INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/fetch.sv" into library xil_defaultlib
-INFO: [VRFC 10-311] analyzing module fetch
-INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/hazard.sv" into library xil_defaultlib
-INFO: [VRFC 10-311] analyzing module hazard
-INFO: [VRFC 10-311] analyzing module mux1
-INFO: [VRFC 10-311] analyzing module mux2
-INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/memory.sv" into library xil_defaultlib
-INFO: [VRFC 10-311] analyzing module memory
-INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/mycpu_top.sv" into library xil_defaultlib
-INFO: [VRFC 10-311] analyzing module mycpu_top
-INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/regfile.sv" into library xil_defaultlib
-INFO: [VRFC 10-311] analyzing module regfile
-INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/writeback.sv" into library xil_defaultlib
-INFO: [VRFC 10-311] analyzing module writeback
+ERROR: [VRFC 10-3805] use of undefined macro 'RTYPE' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:23]
+ERROR: [VRFC 10-4982] syntax error near ')' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:23]
+ERROR: [VRFC 10-3805] use of undefined macro 'ADDU' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:25]
+ERROR: [VRFC 10-4982] syntax error near ':' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:25]
+ERROR: [VRFC 10-3805] use of undefined macro 'SUBU' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:26]
+ERROR: [VRFC 10-4982] syntax error near ':' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:26]
+ERROR: [VRFC 10-3805] use of undefined macro 'AND' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:27]
+ERROR: [VRFC 10-4982] syntax error near ':' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:27]
+ERROR: [VRFC 10-3805] use of undefined macro 'OR' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:28]
+ERROR: [VRFC 10-4982] syntax error near ':' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:28]
+ERROR: [VRFC 10-3805] use of undefined macro 'NOR' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:29]
+ERROR: [VRFC 10-4982] syntax error near ':' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:29]
+ERROR: [VRFC 10-3805] use of undefined macro 'XOR' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:30]
+ERROR: [VRFC 10-4982] syntax error near ':' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:30]
+ERROR: [VRFC 10-3805] use of undefined macro 'SLL' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:31]
+ERROR: [VRFC 10-4982] syntax error near ':' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:31]
+ERROR: [VRFC 10-3805] use of undefined macro 'SRA' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:32]
+ERROR: [VRFC 10-4982] syntax error near ':' [C:/Users/Dell/Desktop/ICS-2021Spring-FDU/source/mycpu/decode/decode.sv:32]
+INFO: [#UNDEF] Sorry, too many errors..
