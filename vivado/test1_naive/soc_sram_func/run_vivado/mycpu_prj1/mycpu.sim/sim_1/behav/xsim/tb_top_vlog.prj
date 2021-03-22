@@ -1,5 +1,5 @@
 # compile verilog/system verilog design source files
-verilog xil_defaultlib  --include "../../../../../../../../../source/include" --include "../../../../../../../../../source/mycpu" --include "../../../../../../rtl/xilinx_ip/clk_pll" \
+verilog xil_defaultlib  --include "../../../../../../../../../source/include" --include "../../../../../../../../../source/include/mycpu" --include "../../../../../../../../../source/mycpu" --include "../../../../../../rtl/xilinx_ip/clk_pll" \
 "../../../../../../rtl/xilinx_ip/clk_pll/clk_pll_clk_wiz.v" \
 "../../../../../../rtl/xilinx_ip/clk_pll/clk_pll.v" \
 "../../../../../../rtl/xilinx_ip/data_ram/sim/data_ram.v" \
@@ -8,7 +8,7 @@ verilog xil_defaultlib  --include "../../../../../../../../../source/include" --
 "../../../../../../rtl/CONFREG/confreg.v" \
 "../../../../../../rtl/soc_lite_top.v" \
 
-sv xil_defaultlib  --include "../../../../../../../../../source/include" --include "../../../../../../../../../source/mycpu" --include "../../../../../../rtl/xilinx_ip/clk_pll" \
+sv xil_defaultlib  --include "../../../../../../../../../source/include" --include "../../../../../../../../../source/include/mycpu" --include "../../../../../../../../../source/mycpu" --include "../../../../../../rtl/xilinx_ip/clk_pll" \
 "../../../../../../../../../source/util/DBusToSRAMx.sv" \
 "../../../../../../../../../source/util/IBusToSRAMx.sv" \
 "../../../../../../../../../source/mycpu/MyCore.sv" \
@@ -27,7 +27,7 @@ sv xil_defaultlib  --include "../../../../../../../../../source/include" --inclu
 "../../../../../../../../../source/mycpu/translation.sv" \
 "../../../../../../../../../source/mycpu/writeback/writeback.sv" \
 
-verilog xil_defaultlib  --include "../../../../../../../../../source/include" --include "../../../../../../../../../source/mycpu" --include "../../../../../../rtl/xilinx_ip/clk_pll" \
+verilog xil_defaultlib  --include "../../../../../../../../../source/include" --include "../../../../../../../../../source/include/mycpu" --include "../../../../../../../../../source/mycpu" --include "../../../../../../rtl/xilinx_ip/clk_pll" \
 "../../../../../../testbench/mycpu_tb.v" \
 
 # compile glbl module
