@@ -1,5 +1,5 @@
 `include "common.svh"
-`include "icode.svh"
+`include "mycpu/icode.svh"
 
 module decode (
     input logic [31:0] instr, pc,
