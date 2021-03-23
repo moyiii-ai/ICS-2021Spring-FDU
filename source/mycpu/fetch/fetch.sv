@@ -51,13 +51,16 @@ module fetch (
     end
 
     always_ff @(posedge clk) begin
-        if(~resetn)
-            pcF <= 32'hbfc0_0000;
-        else if(~stall)
+        if(~resetn) begin
+            pcF <= 32'hbfc0_0000 - 4;
+            ireq.addr <= 32'hbfc0_0000 - 4;
+        end
+        else if(~stall) begin
             pcF <= pcc;
+            ireq.addr <= pcc;
+        end
     end
-    assign ireq.valid = ~stall;
-    assign ireq.addr = pcF;
+    assign ireq.valid = (~stall);
     assign instrF = iresp.data;
 
     logic _unused_ok = &{iresp};
