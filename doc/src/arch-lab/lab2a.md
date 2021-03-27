@@ -76,6 +76,8 @@ DBus 是 32 位的总线，每周期至多传输 4 个字节。`data` 的四个�
 
 这么做可能比较反直觉。DBus 的 byte lanes 来源于 AXI 总线协议，其意图在于兼容只能 4 字节对齐寻址的设备（一般的内存都是这么做的），同时不要求 `addr` 必须与 4 字节对齐是因为可能会和只能字节寻址的设备交互（例如字符打印）。
 
+换句话说，当你向 `0x1f2` 发送读取请求时，DBus 会把 `0x1f0`、`0x1f1`、`0x1f2` 和 `0x1f3` 这四个地址对应的字节全部返回给你，分别放在 `data[7:0]`、`data[15:8]`、`data[23:16]` 和 `data[31:24]` 中。同样的，当你向 `0x1f2` 这个地址写入时，实际上是同时向 `0x1f0`、`0x1f1`、`0x1f2` 和 `0x1f3` 这四个地址对应的字节写入，不过此时我们可以使用 `strobe` 信号单独决定每个字节是否真的需要写入。
+
 下面展示了从地址 `0xbfc01fc2` 开始连续写入 15 个字节 `0x11`~`0xff` 的过程：
 
 ![DBus 连续写入示例](../asset/lab2/byte-lanes.svg)
@@ -145,7 +147,9 @@ assign flushW = ~d_data_ok;
 
 `CBusArbiter` 有一个缺点，它需要花费一个时钟周期来确定谁有总线的访问权，无论是有多个请求还是只有一个请求。换句话说，`CBusArbiter` 会把所有的访存增加至少一个周期的延时。实际上这一个时钟周期可以被优化掉，只是这么做是要付出代价的。因为这种优化需要添加新的组合逻辑，有可能会增加关键路径的延时，导致 CPU 频率降低。
 
-如果你想优化 `CBusArbiter`，请在 `source/mycpu/MyArbiter.sv` 中实现新的仲裁器，然后将 `VTop` 的 `CBusArbiter mux` 换成 `MyArbiter mux`。你可以选择实现优先级仲裁，或者是 round-robin 式仲裁。
+如果你想优化 `CBusArbiter`，请在 `source/mycpu/MyArbiter.sv` 中实现新的仲裁器，然后将 `VTop` 的 `CBusArbiter mux` 换成 `MyArbiter mux`。
+
+另外请注意：**`CBusArbiter` 默认的仲裁策略是 DBus 比 IBus 优先**。如果你想调换优先级，请将上面 `CBusArbiter mux` 接口中的 `icreq` 和 `dcreq` 对换，以及将 `icresp` 和 `dcresp` 对换。
 
 ### 实现新的指令
 
@@ -250,6 +254,16 @@ make vsim TARGET=mycpu/VTop TEST=test1 -j
 (info) testbench finished in 337516 cycles (601.973 KHz).
 ```
 
+### 随机延时
+
+`vmain` 默认情况下并没有随机延时。可以使用 `--p-disable`/`-p` 参数开启随机延时。这个参数是一个概率值，表示内存每个周期无响应的概率。例如：
+
+```shell
+make vsim -j TARGET=mycpu/VTop TEST=test1 VSIM_ARGS='-p 0.99'
+```
+
+表示内存有 99% 的时间没有响应。如果设置为 `-p 0`，相当于关闭随机延时。
+
 ### 记录波形图
 
 如果你不幸没有通过 `vmain` 的测试，看到了类似于下面的报错：
@@ -313,7 +327,12 @@ gtkwave build/trace.fst
 
 ### 通过标准
 
-* 通过 `test1` 和 `test2` 的上板和 Verilator 仿真。
+* 通过以下四条命令的测试：
+    * `make vsim -j TARGET=mycpu/VTop TEST=test1`
+    * `make vsim -j TARGET=mycpu/VTop TEST=test1 VSIM_ARGS="-p 0.99"`
+    * `make vsim -j TARGET=mycpu/VTop TEST=test2`
+    * `make vsim -j TARGET=mycpu/VTop TEST=test2 VSIM_ARGS="-p 0.99"`
+* 上板通过 `test1` 和 `test2`。
 
 ### 实验报告要求
 
@@ -324,7 +343,7 @@ gtkwave build/trace.fst
 
 **2021 年 4 月 11 日 23:59:59**
 
-## *拓展内容
+## *思考题
 
 * 张三在 `source/util/CBusMultiplexer.sv` 中实现了自己的仲裁器，然而过不了仿真。请指出 `CBusMultiplexer` 存在的问题。
 * 龙芯杯的测试框架中有一个叫做 CONFREG 的模块[^confreg]，用来控制 FPGA 上的各种硬件资源，例如 LED 数码管、按钮。CONFREG 是一个 memory-mapped 设备。其中地址 `0xbfaffff0` 是一个简化的 UART 打印接口，往这个地址写入 ASCII 码就可在仿真中输出文字。特别的，如果写入的值是 `0xff`，就会立即停止仿真。

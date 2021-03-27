@@ -2,7 +2,6 @@
 
 #include <mutex>
 #include <cstdio>
-#include <cassert>
 #include <cstdarg>
 #include <sstream>
 #include <fstream>
@@ -18,7 +17,7 @@ void hook_signal(int sig, handler_t *handler) {
     action.sa_flags = SA_RESTART;
 
     auto result = sigaction(sig, &action, NULL);
-    assert(result >= 0);
+    internal_assert(result >= 0, "failed to hook signal %d", sig);
 }
 
 /*
@@ -63,8 +62,8 @@ static void feed(ByteSeq &seq, std::ifstream &fp, int base) {
 
         size_t count = 0;
         uint64_t data = std::stoull(buf, &count, base);
-        assert(count == buf.size());
-        assert((data & 0xffffffff) == data);
+        asserts(count == buf.size(),  "failed to parse data \"%s\" in base %d", buf.data(), base);
+        asserts((data & 0xffffffff) == data, "\"%s\" cannot fit in a 32-bit integer", buf.data());
 
         for (size_t i = 0; i < 4; i++) {
             seq.push_back(data & 0xff);
@@ -82,7 +81,7 @@ static auto parse_coe(std::ifstream &fp) -> ByteSeq {
     {
         std::istringstream bs(buf);
         std::getline(bs, buf, '=');
-        assert(trim(buf) == "memory_initialization_radix");
+        asserts(trim(buf) == "memory_initialization_radix", "COE file should begin with \"memory_initialization_radix = \"");
         std::getline(bs, buf);
     }
 
@@ -94,7 +93,7 @@ static auto parse_coe(std::ifstream &fp) -> ByteSeq {
     {
         std::istringstream bs(buf);
         std::getline(bs, buf, '=');
-        assert(trim(buf) == "memory_initialization_vector");
+        asserts(trim(buf) == "memory_initialization_vector", "the second line of COE file should be \"memory_initialization_vector =\"");
     }
 
     // data
@@ -126,7 +125,7 @@ static auto parse_bin(std::ifstream &fp) -> ByteSeq {
 
 auto parse_memory_file(const std::string &path) -> ByteSeq {
     std::ifstream fp(path);
-    assert(fp);
+    asserts(fp, "failed to open file \"%s\"", path.data());
 
     if (endswith(path, ".coe"))
         return parse_coe(fp);
@@ -172,7 +171,7 @@ void enable_status_line(bool enable) {
 }
 
 #define VPRINT(fp) { \
-    std::lock_guard<std::mutex> guard(_ctx.lock); \
+    std::lock_guard guard(_ctx.lock); \
     check_status_line(); \
     va_list args; \
     va_start(args, message); \
@@ -201,7 +200,7 @@ void notify(const char *message, ...) {
 }
 
 void notify_char(char c) {
-    std::lock_guard<std::mutex> guard(_ctx.lock);
+    std::lock_guard guard(_ctx.lock);
 
     if (_ctx.status_enabled) {
         auto &buf = _ctx.char_buffer;
@@ -219,7 +218,7 @@ void notify_char(char c) {
 
 void status_line(const char *message, ...) {
     if (_ctx.status_enabled) {
-        std::lock_guard<std::mutex> guard(_ctx.lock);
+        std::lock_guard guard(_ctx.lock);
 
         va_list args;
         va_start(args, message);
@@ -263,27 +262,84 @@ void SimpleTimer::update(uint64_t cycles) {
     _cycles = cycles;
 }
 
-StatusReporter::StatusReporter(uint64_t interval_in_ms, const WorkerFn &fn)
-    : stopped(false),
+ThreadWorker::ThreadWorker()
+    : stopped(true), flag(nullptr) {}
+
+ThreadWorker::ThreadWorker(ThreadWorker &&rhs)
+    : stopped(rhs.stopped), flag(rhs.flag), worker(std::move(rhs.worker)) {
+    rhs.stopped = true;
+    rhs.flag = nullptr;
+}
+
+ThreadWorker::ThreadWorker(
+    uint64_t interval_in_ms, bool repeat,
+    const WorkerFn &fn,
+    const WorkerFn &begin_fn,
+    const WorkerFn &final_fn
+)   : stopped(false),
       flag(new bool(false)) {
     auto ptr = flag;
-    worker = std::thread([interval_in_ms, ptr, fn] {
+    worker = std::thread([=] {
+        begin_fn();
+
         while (!(*ptr)) {
             fn();
             std::this_thread::sleep_for(std::chrono::milliseconds(interval_in_ms));
+            if (!repeat)
+                break;
         }
+
+        final_fn();
 
         delete ptr;
     });
     worker.detach();
 }
 
-StatusReporter::~StatusReporter() {
-    if (!stopped)
-        stop();
+auto ThreadWorker::operator=(ThreadWorker &&rhs) -> ThreadWorker & {
+    stopped = rhs.stopped;
+    flag = rhs.flag;
+    worker = std::move(rhs.worker);
+
+    rhs.stopped = true;
+    rhs.flag = nullptr;
+
+    return *this;
 }
 
-void StatusReporter::stop() {
-    stopped = true;
-    *flag = true;
+auto ThreadWorker::once(
+    const WorkerFn &fn,
+    const WorkerFn &begin_fn,
+    const WorkerFn &final_fn
+) -> ThreadWorker {
+    return ThreadWorker(0, false, fn, begin_fn, final_fn);
+}
+
+auto ThreadWorker::loop(
+    const WorkerFn &fn,
+    const WorkerFn &begin_fn,
+    const WorkerFn &final_fn
+) -> ThreadWorker {
+    return ThreadWorker(0, true, fn, begin_fn, final_fn);
+}
+
+auto ThreadWorker::at_interval(
+    uint64_t interval_in_ms,
+    const WorkerFn &fn,
+    const WorkerFn &begin_fn,
+    const WorkerFn &final_fn
+) -> ThreadWorker {
+    return ThreadWorker(interval_in_ms, true, fn, begin_fn, final_fn);
+}
+
+ThreadWorker::~ThreadWorker() {
+    stop();
+}
+
+void ThreadWorker::stop() {
+    if (!stopped) {
+        stopped = true;
+        internal_assert(flag, "flag should not be nullptr");
+        *flag = true;
+    }
 }
