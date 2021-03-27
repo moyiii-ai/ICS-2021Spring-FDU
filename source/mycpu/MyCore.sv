@@ -92,10 +92,9 @@ module MyCore (
 
     always_ff @(posedge clk) begin
         if (~resetn) begin
-            //pcD <= 32'hbfc0_0000;
-            {controlE, controlM, controlW} <= 9'b0;
-            {vse, vte, imme, vtm, aluoutm, aluoutw} <= 32'b0;
-            {rde, rse, rte, shamte, rdm, rdw} <= 5'b0;
+            {controlE, controlM, controlW} <= 27'b0;
+            {vse, vte, imme, vtm, aluoutm, aluoutw} <= 192'b0;
+            {rde, rse, rte, shamte, rdm, rdw} <= 30'b0;
         end 
         else begin
             controlW <= controlM;
@@ -110,8 +109,8 @@ module MyCore (
             aluoutm <= aluoutE;
             if(stall) begin
                 controlE <= 9'b0;
-                {vse, vte, imme} <= 32'b0;
-                {rde, rse, rte, shamte} <= 5'b0;
+                {vse, vte, imme} <= 96'b0;
+                {rde, rse, rte, shamte} <= 20'b0;
             end
             else begin
                 controlE <= controlD;

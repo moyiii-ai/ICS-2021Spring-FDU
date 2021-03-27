@@ -50,17 +50,22 @@ module fetch (
         endcase
     end
 
+    logic [31:0] tempc;
     always_ff @(posedge clk) begin
         if(~resetn) begin
             pcF <= 32'hbfc0_0000 - 4;
-            ireq.addr <= 32'hbfc0_0000 - 4;
+            tempc <= pc;
         end
         else if(~stall) begin
             pcF <= pcc;
-            ireq.addr <= pcc;
+            tempc <= pcc;
+        end
+        else begin
+            tempc <= pcF;
         end
     end
     assign ireq.valid = (~stall);
+    assign ireq.addr = tempc;
     assign instrF = iresp.data;
 
     logic _unused_ok = &{iresp};
