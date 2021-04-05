@@ -26,6 +26,14 @@
 `define BNE 6'b000101
 `define LW 6'b100011
 `define SW 6'b101011
+`define BGTZ 6'b000111
+`define BLEZ 6'b000110
+`define REGIMM 6'b000001 
+
+`define BGEZ 5'b00001 
+`define BGEZAL 5'b10001 
+`define BLTZ 5'b00000 
+`define BLTZAL 5'b10000 
 
 `define J 6'b000010
 `define JAL 6'b000011
