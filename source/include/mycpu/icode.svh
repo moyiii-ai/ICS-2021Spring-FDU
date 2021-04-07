@@ -14,6 +14,17 @@
 `define SLT 6'b101010
 `define SLTU 6'b101011
 `define JR 6'b001000
+`define MFHI 6'b010000
+`define MFLO 6'b010010 
+`define MTHI 6'b010001 
+`define MTLO 6'b010011 
+`define MULT 6'b011000 
+`define MULTU 6'b011000 
+`define DIV 6'b011010 
+`define DIVU 6'b011011 
+`define SLLV 6'b000100 
+`define SRAV 6'b000111 
+`define SRLV 6'b000110 
 
 `define ADDIU 6'b001001
 `define ANDI 6'b001100
@@ -28,7 +39,13 @@
 `define SW 6'b101011
 `define BGTZ 6'b000111
 `define BLEZ 6'b000110
-`define REGIMM 6'b000001 
+`define REGIMM 6'b000001
+`define LB 6'b100000  
+`define LBU 6'b100100 
+`define LH 6'b100001 
+`define LHU 6'b100101
+`define SB 6'b101000 
+`define SH 6'b101001 
 
 `define BGEZ 5'b00001 
 `define BGEZAL 5'b10001 
@@ -37,5 +54,6 @@
 
 `define J 6'b000010
 `define JAL 6'b000011
+`define JALR 6'b001001
 
 `endif

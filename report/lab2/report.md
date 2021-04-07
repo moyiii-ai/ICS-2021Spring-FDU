@@ -12,7 +12,17 @@
 
 R-type = op(6) + rs(5) + rt(5) + rd(5) + shamt(5) + funct(6)
 
-
+* mfhi : GPR[rd] = HI
+* mflo : GPR[rd] = LO
+* mthi : HI = GPR[rs]
+* mtlo : LO = GPR[rs]
+* mult : (HI, LO) = GPR[rs] * GPR[rt] (signed)
+* multu : (HI, LO) = GPR[rs] * GPR[rt] (unsigned)
+* div : (HI, LO) = GPR[rs] / GPR[rt] (signed)
+* divu : (HI, LO) = GPR[rs] / GPR[rt] (unsigned)
+* sllv : GPR[rd] = GPR[rt] << GPR[rs][4:0] (logical)
+* srav : GPR[rd] = GPR[rt] >> GPR[rs][4:0] (arithmetic)
+* srlv : GPR[rd] = GPR[rt] >> GPR[rs][4:0] (logical)
 
 ### 1.2 I型指令
 
@@ -24,20 +34,16 @@ I-type = op(6) + rs/base(5) + rt/func(5) + imm(16)
 * bgezal : if(GPR[rs] >= 0)  GPR[31] = pc + 8, pc += 4 + imm << 2
 * bltz : if(GPR[rs] < 0)  pc += 4 + imm << 2
 * bltzal : if(GPR[rs] < 0)  GPR[31] = pc + 8, pc += 4 + imm << 2
-* lb : GPR[rt] = mem[GPR[base] + offset]
+* lb : GPR[rt] = sign_ext((byte)mem[GPR[base] + offset])
+* lbu : GPR[rt] = zero_ext((byte)mem[GPR[base] + offset])
+* lh : GPR[rt] = sign_ext((halfword)mem[GPR[base] + offset])
+* lhu: GPR[rt] = zero_ext((halfword)mem[GPR[base] + offset])
+* sb : mem[GPR[base] + offset] = (byte)GPR[rt]
+* sh : mem[GPR[base] + offset] = (halfword)GPR[rt]
 
 
 ### 1.3 J型指令
 
 J-type = op(6) + instr_index(26)
 
-
-lb lbu lh lhu jalr 
-
-sllv srav srlv
-
-sb sh
-
-div divu
-
-mfhi mflo mthi mtlo mult multu
+* jalr 

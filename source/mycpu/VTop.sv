@@ -18,7 +18,14 @@ module VTop (
     cbus_req_t  icreq,  dcreq;
     cbus_resp_t icresp, dcresp;
 
-    MyCore core(.*);
+    ibus_req_t myireq;
+    dbus_req_t mydreq;
+
+    MyCore core(
+        .clk(clk), .resetn(resetn),
+        .ireq(myireq), .iresp(iresp),
+        .dreq(mydreq), .dresp(dresp)
+    );
     IBusToCBus icvt(.*);
     DBusToCBus dcvt(.*);
 
@@ -34,6 +41,20 @@ module VTop (
     /**
      * TODO (optional) add address translation for oreq.addr :)
      */
+
+
+    translation translation1(myireq.addr, ireq.addr);
+    translation translation2(mydreq.addr, dreq.addr);
+
+    assign ireq.valid = myireq.valid;
+    assign ireq.size = myireq.size;
+    assign ireq.strobe = myireq.strobe;
+    assign ireq.data = myireq.data;
+
+    assign dreq.valid = mydreq.valid;
+    assign dreq.size = mydreq.size;
+    assign dreq.strobe = mydreq.strobe;
+    assign dreq.data = mydreq.data;
 
     `UNUSED_OK({ext_int});
 endmodule
