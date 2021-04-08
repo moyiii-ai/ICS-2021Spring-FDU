@@ -47,9 +47,6 @@ module VTop (
     translation translation2(mydreq.addr, dreq.addr);
 
     assign ireq.valid = myireq.valid;
-    assign ireq.size = myireq.size;
-    assign ireq.strobe = myireq.strobe;
-    assign ireq.data = myireq.data;
 
     assign dreq.valid = mydreq.valid;
     assign dreq.size = mydreq.size;

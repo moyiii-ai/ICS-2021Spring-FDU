@@ -53,7 +53,7 @@ module fetch (
     logic [31:0] tempc;
     always_ff @(posedge clk) begin
         if(~resetn) begin
-            pcF <= 32'hbfc0_0000 - 4;
+            pcF <= 32'hbfc0_0000;
             tempc <= pc;
         end
         else if(~stall) begin
@@ -64,7 +64,7 @@ module fetch (
             tempc <= pcF;
         end
     end
-    assign ireq.valid = (~stall);
+    assign ireq.valid = 1;
     assign ireq.addr = tempc;
     assign instrF = iresp.data;
 

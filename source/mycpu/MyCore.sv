@@ -77,8 +77,10 @@ module MyCore (
     );
 
     logic [31:0] vsHD, vtHD, vsHe, vtHe;
-    logic stall;
+    logic stall, stallM;
     hazard Hazard(
+        .ireq(ireq), .iresp(iresp),
+        .dreq(dreq), .dresp(dresp),
         .op(instrF[31:26]), .funct(instrF[5:0]),
         .loadE(controlE[1]), .loadM(controlM[1]),
         .regWriteE(controlE[8]),
@@ -87,7 +89,7 @@ module MyCore (
         .vsD(vsD), .vtD(vtD), .vse(vse), .vte(vte),
         .aluoutm(aluoutm), .vW(vW),
         .vsHD(vsHD), .vtHD(vtHD), .vsHe(vsHe), .vtHe(vtHe),
-        .stall(stall)
+        .stallM(stallM), .stall(stall)
     );
 
     always_ff @(posedge clk) begin
@@ -97,16 +99,18 @@ module MyCore (
             {rde, rse, rte, shamte, rdm, rdw} <= 30'b0;
         end 
         else begin
-            controlW <= controlM;
-            pcW <= pcM;
-            rdw <= rdM;
-            aluoutw <= aluoutM;
+            if(~stallM) begin
+                controlW <= controlM;
+                pcW <= pcM;
+                rdw <= rdM;
+                aluoutw <= aluoutM;
 
-            controlM <= controlE;
-            pcM <= pcE;
-            rdm <= rdE;
-            vtm <= vtE;
-            aluoutm <= aluoutE;
+                controlM <= controlE;
+                pcM <= pcE;
+                rdm <= rdE;
+                vtm <= vtE;
+                aluoutm <= aluoutE;
+            end
             if(stall) begin
                 controlE <= 9'b0;
                 {vse, vte, imme} <= 96'b0;
