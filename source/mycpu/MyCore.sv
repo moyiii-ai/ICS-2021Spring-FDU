@@ -12,14 +12,14 @@ module MyCore (
     logic [31:0] pcF, instrF;
 
     fetch Fetch(
-        .pc(pcD), .instr(instrF), .vs(vsHD),
+        .pc(pcD), .instr(instrD), .vs(vsHD),
         .j(jD), .clk(clk), .stall(stall), .resetn(resetn),
         .iresp(iresp),
         .ireq(ireq),
         .pcF(pcF), .instrF(instrF)
     );
 
-    logic [31:0] vsD, vtD, immD;
+    logic [31:0] vsD, vtD, immD, instrD;
     logic [4:0] rsD, rtD, rdD, shamtD;
     logic jD;
     logic [8:0] controlD;
@@ -32,7 +32,7 @@ module MyCore (
     );
 
     decode Decode(
-        .instr(instrF), .pc(pcD),
+        .instr(instrD), .pc(pcD),
         .vs(vsHD), .vt(vtHD),
         .j(jD),
         .controlD(controlD),
@@ -63,14 +63,14 @@ module MyCore (
         .ReadData(dataoutM), .ALUoutM(aluoutM)
     );
 
-    logic [31:0] vW, aluoutw;
+    logic [31:0] vW, aluoutw, dataoutw;
     logic [4:0] rdW, rdw;
     logic write_enableW;
     logic [8:0] controlW;
     writeback WriteBack(
         .memtoreg(controlW[1]), .reg_write(controlW[8]),
         .rdM(rdw),
-        .ReadDataM(dataoutM), .ALUoutM(aluoutw),
+        .ReadDataM(dataoutw), .ALUoutM(aluoutw),
         .write_enable(write_enableW),
         .rdW(rdW),
         .ResultW(vW)
@@ -81,7 +81,7 @@ module MyCore (
     hazard Hazard(
         .ireq(ireq), .iresp(iresp),
         .dreq(dreq), .dresp(dresp),
-        .op(instrF[31:26]), .funct(instrF[5:0]),
+        .op(instrD[31:26]), .funct(instrD[5:0]),
         .loadE(controlE[1]), .loadM(controlM[1]),
         .regWriteE(controlE[8]),
         .rde(rde), .rsD(rsD), .rtD(rtD),
@@ -95,7 +95,7 @@ module MyCore (
     always_ff @(posedge clk) begin
         if (~resetn) begin
             {controlE, controlM, controlW} <= 27'b0;
-            {vse, vte, imme, vtm, aluoutm, aluoutw} <= 192'b0;
+            {vse, vte, imme, vtm, aluoutm, aluoutw, dataoutw} <= 224'b0;
             {rde, rse, rte, shamte, rdm, rdw} <= 30'b0;
         end 
         else begin
@@ -104,6 +104,7 @@ module MyCore (
                 pcW <= pcM;
                 rdw <= rdM;
                 aluoutw <= aluoutM;
+                dataoutw <= dataoutM;
 
                 controlM <= controlE;
                 pcM <= pcE;
@@ -127,6 +128,7 @@ module MyCore (
                 imme <= immD;
                 shamte <= shamtD;
                 pcD <= pcF;
+                instrD <= instrF;
             end
         end
     end

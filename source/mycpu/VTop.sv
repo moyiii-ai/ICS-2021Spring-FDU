@@ -43,8 +43,8 @@ module VTop (
      */
 
 
-    translation translation1(myireq.addr, ireq.addr);
-    translation translation2(mydreq.addr, dreq.addr);
+    translation translation1(.vaddr(myireq.addr), .paddr(ireq.addr));
+    translation translation2(.vaddr(mydreq.addr), .paddr(dreq.addr));
 
     assign ireq.valid = myireq.valid;
 

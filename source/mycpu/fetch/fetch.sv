@@ -54,7 +54,7 @@ module fetch (
     always_ff @(posedge clk) begin
         if(~resetn) begin
             pcF <= 32'hbfc0_0000;
-            tempc <= pc;
+            tempc <= 32'hbfc0_0000;
         end
         else if(~stall) begin
             pcF <= pcc;
