@@ -15,7 +15,7 @@ module hazard(
     output logic stallM, stall
 );
     logic br;
-    logic stallb1, stallb2, stallw, stallj, stalli, stallM, stallrm, stallwm;
+    logic stallb1, stallb2, stallw, stallj, stalli, stallrm, stallwm;
     assign br = (op == `BEQ) | (op == `BNE);
     assign stallb1 = br & regWriteE & ((rde == rsD) | (rde == rtD));
     assign stallb2 = br & (loadE | loadM) & ((rdm == rsD) | (rdm == rtD));

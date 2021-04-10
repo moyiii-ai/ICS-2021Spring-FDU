@@ -30,23 +30,17 @@ module fetch (
     always_comb begin
         case(op)
             `RTYPE:
-                if(funct == `JR)
+                if((funct == `JR) | (funct == `JALR))
                     pcc = vs;
-                else
-                    pcc = pcplusF;
-            `BNE:
-                if(j)
-                    pcc = bpc;
-                else
-                    pcc = pcplusF;
-            `BEQ:
-                if(j)
-                    pcc = bpc;
                 else
                     pcc = pcplusF;
             `J:   pcc = jpc;
             `JAL: pcc = jpc;
-            default: pcc = pcplusF;
+            default:
+                if(j)
+                    pcc = bpc;
+                else
+                    pcc = pcplusF;
         endcase
     end
 

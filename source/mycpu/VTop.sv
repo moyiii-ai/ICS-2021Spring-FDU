@@ -32,7 +32,7 @@ module VTop (
     /**
      * TODO (Lab2) replace mux with your own arbiter :)
      */
-    CBusMultiplexer mux(
+    CBusArbiter mux(
         .ireqs({icreq, dcreq}),
         .iresps({icresp, dcresp}),
         .*

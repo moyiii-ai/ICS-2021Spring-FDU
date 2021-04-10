@@ -20,7 +20,6 @@ module alu (
             4'b1001: out = {31'b0, $signed(in1) < $signed(in2)}; //signed
             4'b1010: out = {31'b0, in1 < in2}; //unsigned
             
-
             4'b1111: out = in2;
             default: out = 32'b0;
         endcase

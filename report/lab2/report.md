@@ -23,10 +23,11 @@ R-type = op(6) + rs(5) + rt(5) + rd(5) + shamt(5) + funct(6)
 * sllv : GPR[rd] = GPR[rt] << GPR[rs][4:0] (logical)
 * srav : GPR[rd] = GPR[rt] >> GPR[rs][4:0] (arithmetic)
 * srlv : GPR[rd] = GPR[rt] >> GPR[rs][4:0] (logical)
+* jalr: GPR[rd] = pc + 8, pc = GPR[rs]
 
 ### 1.2 I型指令
 
-I-type = op(6) + rs/base(5) + rt/func(5) + imm(16)
+I-type = op(6) + rs(5) + rt(5) + imm(16)
 
 * bgtz : if(GPR[rs] > 0)  pc += 4 + imm << 2
 * blez : if(GPR[rs] <= 0)  pc += 4 + imm << 2
@@ -34,16 +35,9 @@ I-type = op(6) + rs/base(5) + rt/func(5) + imm(16)
 * bgezal : if(GPR[rs] >= 0)  GPR[31] = pc + 8, pc += 4 + imm << 2
 * bltz : if(GPR[rs] < 0)  pc += 4 + imm << 2
 * bltzal : if(GPR[rs] < 0)  GPR[31] = pc + 8, pc += 4 + imm << 2
-* lb : GPR[rt] = sign_ext((byte)mem[GPR[base] + offset])
-* lbu : GPR[rt] = zero_ext((byte)mem[GPR[base] + offset])
-* lh : GPR[rt] = sign_ext((halfword)mem[GPR[base] + offset])
-* lhu: GPR[rt] = zero_ext((halfword)mem[GPR[base] + offset])
-* sb : mem[GPR[base] + offset] = (byte)GPR[rt]
-* sh : mem[GPR[base] + offset] = (halfword)GPR[rt]
-
-
-### 1.3 J型指令
-
-J-type = op(6) + instr_index(26)
-
-* jalr 
+* lb : GPR[rt] = sign_ext((byte)mem[GPR[rs] + offset])
+* lbu : GPR[rt] = zero_ext((byte)mem[GPR[rs] + offset])
+* lh : GPR[rt] = sign_ext((halfword)mem[GPR[rs] + offset])
+* lhu: GPR[rt] = zero_ext((halfword)mem[GPR[rs] + offset])
+* sb : mem[GPR[rs] + offset] = (byte)GPR[rt]
+* sh : mem[GPR[rs] + offset] = (halfword)GPR[rt]

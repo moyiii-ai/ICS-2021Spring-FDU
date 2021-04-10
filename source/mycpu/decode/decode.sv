@@ -5,7 +5,7 @@ module decode (
     input logic [31:0] instr, pc,
     input logic [31:0] vs, vt,
     output logic j,
-    output logic [8:0] controlD,
+    output logic [11:0] controlD,
     output logic [4:0] rsD, rtD, rdD, shamtD,
     output logic [31:0] immD
 
@@ -13,65 +13,89 @@ module decode (
     /*control :
     sign_extend(1) + imm_type(2)
     reg_dst(2) + reg_write(1) + 
+    strobe_type(2) + mem_extend(1) + 
     alu_shamt(1) + alu_imm(1) + alu_funct(4) +
     memtoreg(1) + mem_write(1)*/
     logic [5:0] op, funct;
-    logic [13:0] control;
+    logic [16:0] control;
     assign op = instr[31:26];
     assign funct = instr[5:0];
+    assign rsD = instr[25:21];
+    assign rtD = instr[20:16];
     always_comb begin
         if(op == `RTYPE) begin
             case(funct)
-                `ADDU:  control = 14'b0_00_01_1_0_0_0000_0_0;
-                `SUBU:  control = 14'b0_00_01_1_0_0_0001_0_0;
-                `AND:   control = 14'b0_00_01_1_0_0_0010_0_0;
-                `OR:    control = 14'b0_00_01_1_0_0_0011_0_0;
-                `NOR:   control = 14'b0_00_01_1_0_0_0100_0_0;
-                `XOR:   control = 14'b0_00_01_1_0_0_0101_0_0;
-                `SLL:   control = 14'b0_00_01_1_1_0_0110_0_0;
-                `SRA:   control = 14'b0_00_01_1_1_0_0111_0_0;
-                `SRL:   control = 14'b0_00_01_1_1_0_1000_0_0;
-                `SLT:   control = 14'b0_00_01_1_0_0_1001_0_0;
-                `SLTU:  control = 14'b0_00_01_1_0_0_1010_0_0;
-                `JR:    control = 14'b0_00_00_0_0_0_0000_0_0;
-                default: control = 0;
+                `ADDU:  control = 17'b0_00_01_1_00_0_0_0_0000_0_0;
+                `SUBU:  control = 17'b0_00_01_1_00_0_0_0_0001_0_0;
+                `AND:   control = 17'b0_00_01_1_00_0_0_0_0010_0_0;
+                `OR:    control = 17'b0_00_01_1_00_0_0_0_0011_0_0;
+                `NOR:   control = 17'b0_00_01_1_00_0_0_0_0100_0_0;
+                `XOR:   control = 17'b0_00_01_1_00_0_0_0_0101_0_0;
+                `SLL:   control = 17'b0_00_01_1_00_0_1_0_0110_0_0;
+                `SRA:   control = 17'b0_00_01_1_00_0_1_0_0111_0_0;
+                `SRL:   control = 17'b0_00_01_1_00_0_1_0_1000_0_0;
+                `SLLV:  control = 17'b0_00_01_1_00_0_1_0_0110_0_0;
+                `SRAV:  control = 17'b0_00_01_1_00_0_1_0_0111_0_0;
+                `SRLV:  control = 17'b0_00_01_1_00_0_1_0_1000_0_0;
+                `SLT:   control = 17'b0_00_01_1_00_0_0_0_1001_0_0;
+                `SLTU:  control = 17'b0_00_01_1_00_0_0_0_1010_0_0;
+                `JR:    control = 17'b0_00_00_0_00_0_0_0_0000_0_0;
+                `JALR:  control = 17'b0_11_01_1_00_0_0_1_1111_0_0;
+                default: control = 17'b0;
             endcase
         end
         else begin
             case(op)
-                `ADDIU: control = 14'b1_00_10_1_0_1_0000_0_0;
-                `ANDI:  control = 14'b0_00_10_1_0_1_0010_0_0;
-                `ORI:   control = 14'b0_00_10_1_0_1_0011_0_0;
-                `XORI:  control = 14'b0_00_10_1_0_1_0101_0_0;
-                `SLTI:  control = 14'b1_00_10_1_0_1_1001_0_0;
-                `SLTIU: control = 14'b1_00_10_1_0_1_1010_0_0;
-                `LUI:   control = 14'b0_01_10_1_0_1_1111_0_0;
-                `BEQ:   control = 14'b1_10_00_0_0_1_1110_0_0;
-                `BNE:   control = 14'b1_10_00_0_0_1_1110_0_0;
-                `LW:    control = 14'b1_00_10_1_0_1_0000_1_0;
-                `SW:    control = 14'b1_00_00_0_0_1_0000_0_1;
-                `J:     control = 14'b0_00_00_0_0_0_0000_0_0;
-                `JAL:   control = 14'b0_11_11_1_0_1_1111_0_0;
-                default: control = 0;
+                `ADDIU: control = 17'b1_00_10_1_00_0_0_1_0000_0_0;
+                `ANDI:  control = 17'b0_00_10_1_00_0_0_1_0010_0_0;
+                `ORI:   control = 17'b0_00_10_1_00_0_0_1_0011_0_0;
+                `XORI:  control = 17'b0_00_10_1_00_0_0_1_0101_0_0;
+                `SLTI:  control = 17'b1_00_10_1_00_0_0_1_1001_0_0;
+                `SLTIU: control = 17'b1_00_10_1_00_0_0_1_1010_0_0;
+                `LUI:   control = 17'b0_01_10_1_00_0_0_1_1111_0_0;
+                `LW:    control = 17'b1_00_10_1_00_0_0_1_0000_1_0;
+                `LH:    control = 17'b1_00_10_1_01_1_0_1_0000_1_0;
+                `LHU:   control = 17'b1_00_10_1_01_0_0_1_0000_1_0;
+                `LB:    control = 17'b1_00_10_1_10_1_0_1_0000_1_0;
+                `LBU:   control = 17'b1_00_10_1_10_0_0_1_0000_1_0;
+                `SW:    control = 17'b1_00_00_0_00_0_0_1_0000_0_1;
+                `SH:    control = 17'b1_00_00_0_01_0_0_1_0000_0_1;
+                `SB:    control = 17'b1_00_00_0_10_0_0_1_0000_0_1;
+                `J:     control = 17'b0_00_00_0_00_0_0_0_0000_0_0;
+                `JAL:   control = 17'b0_11_11_1_00_0_0_1_1111_0_0;
+                `REGIMM:
+                    if((rtD == `BLTZAL) | (rtD == `BGEZAL))
+                        control = 17'b0_11_11_1_00_0_0_1_1111_0_0;
+                    else
+                        control = 17'b0;
+                default: control = 17'b0;
             endcase
         end
     end
 
     logic [15:0] st_imm;
     logic [4:0] rd;
-    assign rsD = instr[25:21];
-    assign rtD = instr[20:16];
     assign rd = instr[15:11];
     assign st_imm = instr[15:0];
-    assign shamtD = instr[10:6];
+
+    logic [5:0] shamt;
+    logic shamt_op;
+    assign shamt_op = (funct == `SLLV) | (funct == `SRAV) | (funct == `SRLV);
+    assign shamt = instr[10:6];
+    always_comb begin
+        if((op == `RTYPE) & shamt_op)
+            shamtD = vs[4:0];
+        else
+            shamtD = shamt;
+    end
 
     logic sign_extend;
     logic [1:0] reg_dst, imm_type;
-    // reg_dst: 00:0  01:rd 10:rt 11:31
-    //imm_tpye: 00:ext_imm 01:imm<<16 10:imm<<2 11:pc+4
-    assign sign_extend = control[13];
-    assign imm_type = control[12:11];
-    assign reg_dst = control[10:9];
+    // reg_dst: 00:0  01:rd  10:rt  11:31
+    //imm_tpye: 00:ext_imm 01:imm<<16 10:imm<<2 11:pc+8
+    assign sign_extend = control[16];
+    assign imm_type = control[15:14];
+    assign reg_dst = control[13:12];
 
     always_comb begin
         case(reg_dst)
@@ -100,6 +124,16 @@ module decode (
         endcase 
     end
     
-    assign j = ((op == `BEQ) & (vs == vt)) | ((op == `BNE) & (vs != vt));
-    assign controlD = control[8:0];
+    logic beq, bne, bgtz, blez, bgez, bgezal, bltz, bltzal, regimm;
+    assign beq = (op == `BEQ) & (vs == vt);
+    assign bne = (op == `BNE) & (vs != vt);
+    assign bgtz = (op == `BGTZ) & ($signed(vs) > 0);
+    assign blez = (op == `BLEZ) & ($signed(vs) <= 0);
+    assign bgez = (rtD == `BGEZ) & ($signed(vs) >= 0);
+    assign bgezal = (rtD == `BGEZAL) & ($signed(vs) >= 0);
+    assign bltz = (rtD == `BLTZ) & ($signed(vs) < 0);
+    assign bltzal = (rtD == `BLTZAL) & ($signed(vs) < 0);
+    assign regimm = (op == `REGIMM) & (bltz | bltzal | bgez | bgezal);
+    assign j = beq | bne | bgtz | blez | regimm;
+    assign controlD = control[11:0];
 endmodule
