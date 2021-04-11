@@ -14,30 +14,30 @@ module mem_input (
         else if(strobe_type == 2'b01) begin
             if(tail[1] == 0) begin
                 strobe = {2'b0, {2{mem_write}}};
-                out[15:0] = in[15:0];
+                out = {16'b0, in[15:0]};
             end
             else begin
                 strobe = {{2{mem_write}}, 2'b0};
-                out[31:16] = in[15:0];
+                out = {in[15:0], 16'b0};
             end
         end
         else begin
             case(tail) 
                 2'b00: begin
                     strobe = {3'b0, mem_write};
-                    out[7:0] = in[7:0];
+                    out = {24'b0, in[7:0]};
                 end
                 2'b01: begin 
                     strobe = {2'b0, mem_write, 1'b0};
-                    out[15:8] = in[7:0];
+                    out = {16'b0, in[7:0], 8'b0};
                 end
                 2'b10: begin
                     strobe = {1'b0, mem_write, 2'b0};
-                    out[23:16] = in[7:0];
+                    out = {8'b0, in[7:0], 16'b0};
                 end
                 default: begin
                     strobe = {mem_write, 3'b0};
-                    out[31:24] = in[7:0];
+                    out = {in[7:0], 24'b0};
                 end
             endcase
         end

@@ -17,16 +17,19 @@ module mult (
                 hiE = ans[63:32]; loE = ans[31:0];
             end
             4'b1101: begin
+                ans = 63'b0;
                 loE = signed'(in1) / signed'(in2);
                 hiE = signed'(in1) % signed'(in2);
             end
             4'b1110: begin
                 /*loE = {1'b0, in1[30:0]} / {1'b0, in2[30:0]};
                 hiE = {1'b0, in1[30:0]} % {1'b0, in2[30:0]};*/
+                ans = 63'b0;
                 loE = in1 / in2;
                 hiE = in1 % in2;
             end
             default: begin
+                ans = 63'b0;
                 hiE = hie;
                 loE = loe;
             end
