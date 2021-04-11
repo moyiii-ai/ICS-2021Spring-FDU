@@ -21,8 +21,8 @@ module mult (
                 hiE = signed'(in1) % signed'(in2);
             end
             4'b1110: begin
-                loE = {1'b0, in1} / {1'b0, in2};
-                hiE = {1'b0, in1} % {1'b0, in2};
+                loE = {1'b0, in1[30:0]} / {1'b0, in2[30:0]};
+                hiE = {1'b0, in1[30:0]} % {1'b0, in2[30:0]};
             end
             default: begin
                 hiE = hie;
