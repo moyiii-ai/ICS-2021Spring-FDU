@@ -88,7 +88,7 @@ module decode (
     assign rd = instr[15:11];
     assign st_imm = instr[15:0];
 
-    logic [5:0] shamt;
+    logic [4:0] shamt;
     logic shamt_op;
     assign shamt_op = (funct == `SLLV) | (funct == `SRAV) | (funct == `SRLV);
     assign shamt = instr[10:6];
@@ -145,5 +145,5 @@ module decode (
     assign bltzal = (rtD == `BLTZAL) & ($signed(vs) < 0);
     assign regimm = (op == `REGIMM) & (bltz | bltzal | bgez | bgezal);
     assign j = beq | bne | bgtz | blez | regimm;
-    assign controlD = control[11:0];
+    assign controlD = control[15:0];
 endmodule

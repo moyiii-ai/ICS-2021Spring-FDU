@@ -25,8 +25,8 @@ module hazard(
     assign stallw = loadE & ((rde == rsD) | (rde == rtD));
     assign stallj = (op == `RTYPE) & (funct == `JR) & regWriteE & (rde == rsD);
 
-    assign stallrm = dreq.valid & (~dreq.strobe) & (~dresp.data_ok);
-    assign stallwm = dreq.valid & dreq.strobe & (~dresp.addr_ok);  
+    assign stallrm = dreq.valid & (dreq.strobe == 4'b0) & (dresp.data_ok);
+    assign stallwm = dreq.valid & (dreq.strobe != 4'b0) & (~dresp.addr_ok);  
     assign stallM = stallrm | stallwm;
     assign stalli = ireq.valid & (~iresp.data_ok); 
     assign stall = stallb1 | stallb2 | stallw | stallj | stalli | stallM;
@@ -42,7 +42,7 @@ module hazard(
     always_comb begin
         if(lo_writeM)
             loHe = loM;
-        else if(hi_writeW)
+        else if(lo_writeW)
             loHe = loW;
         else loHe = loe;
     end
@@ -68,5 +68,7 @@ module hazard(
         .aluoutm(aluoutm), .vD(vtD),
         .vHD(vtHD)
     );
-    
+
+    logic _unused_ok = &{ireq, iresp, dreq, dresp};
+
 endmodule

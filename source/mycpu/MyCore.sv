@@ -80,7 +80,7 @@ module MyCore (
 
     logic [31:0] aluoutw, dataoutw;
     logic [31:0] hiw, low, hiW, loW;
-    logic ho_writeW, lo_writeW;
+    logic hi_writeW, lo_writeW;
     logic [4:0] rdw;
     logic [31:0] vW /* verilator public_flat_rd */;
     logic [4:0] rdW /* verilator public_flat_rd */;

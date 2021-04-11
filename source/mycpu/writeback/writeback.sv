@@ -6,11 +6,12 @@ module writeback(
     input logic [31:0] ReadDataM, ALUoutM,
     input logic [31:0] hiw, low,
     output logic write_enable,
-    output logic ho_writeW, lo_writeW,
+    output logic hi_writeW, lo_writeW,
     output logic [4:0] rdW,
     output logic [31:0] ResultW, hiW, loW
 );
     logic memtoreg, ho_read, lo_read;
+    logic [3:0] funct;
     assign write_enable = control[15];
     assign memtoreg = control[1];
     assign hi_read = control[14];
@@ -40,4 +41,7 @@ module writeback(
             loW = low;
         end
     end
+        
+    logic _unused_ok = &{control};
+
 endmodule
