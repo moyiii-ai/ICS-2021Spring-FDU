@@ -47,7 +47,7 @@ I-type = op(6) + rs(5) + rt(5) + imm(16)
 1. icode.svh：增加了新增指令的编码。
 2. fetch阶段： 增加了对新跳转指令的支持。
 3. decode阶段：将控制信号增加2位记录内存读写粒度，增加1位记录读内存符号扩展，增加4位记录HILO读写。增加对新增分支指令的判断。处理寄存器值作为shamt的情况。
-4. execute阶段：增加mult乘除法器。
+4. execute阶段：增加mult单周期乘除法器。
 5. memory阶段：增加mem_input、mem_extension模块，分别处理不同粒度的内存读写。
 6. writeback阶段：增加hi、lo以及由hilo到寄存器的写逻辑。
 7. hazard：增加内存延迟的阻塞。增加对hi、lo的转发。
@@ -55,6 +55,46 @@ I-type = op(6) + rs(5) + rt(5) + imm(16)
 9. Mycore：针对上述修改增加数据通路。增加hilo用于读写hi、lo寄存器。
 
 ### 3、测试照片
+
+#### 3.1 verilator test1
+
+![avator](verilator1.png)
+
+#### 3.2 verilator test1 延时
+
+![avator](verilator1p.png)
+
+#### 3.3 verilator test2
+
+![avator](verilator2.png)
+
+#### 3.4 verilator test2 延时
+
+![avator](verilator2p.png)
+
+#### 3.5 verilator test3
+
+![avator](verilator3.png)
+
+#### 3.6 verilator test3 延时
+
+![avator](verilator3p.png)
+
+#### 3.7 vivado test1 仿真
+
+![avator](test1sim.png)
+
+#### 3.8 vivado test2 仿真
+
+![avator](test2sim.png)
+
+#### 3.9 vivado test3 仿真
+
+![avator](test3sim.png)
+
+#### 3.10 上板
+
+![avator](board.jpg)
 
 ### 4、ToDo
 
