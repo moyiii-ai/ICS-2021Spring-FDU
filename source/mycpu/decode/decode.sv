@@ -80,7 +80,7 @@ module decode (
                 `JAL:   control = 21'b0_11_11_1_0000_00_0_0_1_1111_0_0;
                 `REGIMM:
                     if((rtD == `BLTZAL) | (rtD == `BGEZAL))
-                        control = 21'b0_11_11_1_00_0_0_1_1111_0_0;
+                        control = 21'b0_11_11_1_0000_00_0_0_1_1111_0_0;
                     else
                         control = 21'b0;
                 default: control = 21'b0;
