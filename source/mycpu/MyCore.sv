@@ -92,7 +92,7 @@ module MyCore (
         .ReadDataM(dataoutw), .ALUoutM(aluoutw),
         .hiw(hiw), .low(low),
         .write_enable(write_enableW),
-        .ho_writeW(ho_writeW), .lo_writeW(lo_writeW),
+        .hi_writeW(hi_writeW), .lo_writeW(lo_writeW),
         .rdW(rdW),
         .ResultW(vW), .hiW(hiW), .loW(loW)
     );

@@ -10,7 +10,7 @@ module writeback(
     output logic [4:0] rdW,
     output logic [31:0] ResultW, hiW, loW
 );
-    logic memtoreg, ho_read, lo_read;
+    logic memtoreg, hi_read, lo_read;
     logic [3:0] funct;
     assign write_enable = control[15];
     assign memtoreg = control[1];
