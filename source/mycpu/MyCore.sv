@@ -8,8 +8,9 @@ module MyCore (
     output dbus_req_t  dreq,
     input  dbus_resp_t dresp
 );
-    logic [31:0] pcD, pcE, pcM, pcW;
+    logic [31:0] pcD, pcE, pcM;
     logic [31:0] pcF, instrF;
+    logic [31:0] pcW /* verilator public_flat_rd */;
 
     fetch Fetch(
         .pc(pcD), .instr(instrD), .vs(vsHD),
@@ -77,10 +78,13 @@ module MyCore (
         .hiM(hiM), .loM(loM)
     );
 
-    logic [31:0] vW, aluoutw, dataoutw;
+    logic [31:0] aluoutw, dataoutw;
     logic [31:0] hiw, low, hiW, loW;
-    logic [4:0] rdW, rdw;
-    logic write_enableW, ho_writeW, lo_writeW;
+    logic ho_writeW, lo_writeW;
+    logic [4:0] rdw;
+    logic [31:0] vW /* verilator public_flat_rd */;
+    logic [4:0] rdW /* verilator public_flat_rd */;
+    logic write_enableW /* verilator public_flat_rd */;
     logic [15:0] controlW;
     writeback WriteBack(
         .control(controlW),
