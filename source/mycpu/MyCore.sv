@@ -124,7 +124,7 @@ module MyCore (
             {vse, vte, imme, vtm, aluoutm, aluoutw, dataoutw} <= 224'b0;
             {hiw, low, him, hiw} <= 128'b0;
             {rde, rse, rte, shamte, rdm, rdw} <= 30'b0;
-            instrD <= 32'hffffffff;
+            instrD <= 32'b0;
         end 
         else begin
             if(~stallM) begin
