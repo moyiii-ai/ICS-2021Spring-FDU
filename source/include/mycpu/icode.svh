@@ -20,7 +20,7 @@
 `define MTLO 6'b010011 
 `define MULT 6'b011000 
 `define MULTU 6'b011001 
-`define DIV 6'b011010 
+`define DIV 6'b011010
 `define DIVU 6'b011011 
 `define SLLV 6'b000100 
 `define SRAV 6'b000111 
