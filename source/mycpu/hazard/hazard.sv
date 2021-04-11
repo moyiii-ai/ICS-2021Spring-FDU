@@ -11,6 +11,9 @@ module hazard(
     input logic [4:0] rdm, rdW, rse, rte, 
     input logic [31:0] vsD, vtD, vse, vte,
     input logic [31:0] aluoutm, vW,
+    input logic hi_writeM, hi_writeW, lo_writeM, lo_writeW,
+    input logic [31:0] hiM, hiW, loM, loW, hie, loe,
+    output logic [31:0] hiHe, loHe,
     output logic [31:0] vsHD, vtHD, vsHe, vtHe,
     output logic stallM, stall
 );
@@ -27,6 +30,23 @@ module hazard(
     assign stallM = stallrm | stallwm;
     assign stalli = ireq.valid & (~iresp.data_ok); 
     assign stall = stallb1 | stallb2 | stallw | stallj | stalli | stallM;
+    
+    always_comb begin
+        if(hi_writeM)
+            hiHe = hiM;
+        else if(hi_writeW)
+            hiHe = hiW;
+        else hiHe = hie;
+    end
+
+    always_comb begin
+        if(lo_writeM)
+            loHe = loM;
+        else if(hi_writeW)
+            loHe = loW;
+        else loHe = loe;
+    end
+    
     mux1 muxs1(
         .re(rse), .rm(rdm), .rW(rdW),
         .aluoutm(aluoutm), .vW(vW), .ve(vse),

@@ -41,3 +41,24 @@ I-type = op(6) + rs(5) + rt(5) + imm(16)
 * lhu: GPR[rt] = zero_ext((halfword)mem[GPR[rs] + offset])
 * sb : mem[GPR[rs] + offset] = (byte)GPR[rt]
 * sh : mem[GPR[rs] + offset] = (halfword)GPR[rt]
+
+### 2、修改记录
+
+1. icode.svh：增加了新增指令的编码。
+2. fetch阶段： 增加了对新跳转指令的支持。
+3. decode阶段：将控制信号增加2位记录内存读写粒度，增加1位记录读内存符号扩展，增加4位记录HILO读写。增加对新增分支指令的判断。处理寄存器值作为shamt的情况。
+4. execute阶段：增加mult乘除法器。
+5. memory阶段：增加mem_input、mem_extension模块，分别处理不同粒度的内存读写。
+6. writeback阶段：增加hi、lo以及由hilo到寄存器的写逻辑。
+7. hazard：增加内存延迟的阻塞。增加对hi、lo的转发。
+8. VTop：加入地址翻译。
+9. Mycore：针对上述修改增加数据通路。增加hilo用于读写hi、lo寄存器。
+
+### 3、测试照片
+
+### 4、ToDo
+
+1. 多周期乘除法器
+2. 修改数据通路，用结构体规整数据传递格式
+3. 仲裁器
+4. 在CPU上运行程序

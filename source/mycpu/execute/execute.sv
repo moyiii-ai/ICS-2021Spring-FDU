@@ -4,8 +4,9 @@ module execute (
     input logic [7:2] control, 
     input logic [4:0] rd, shamt,
     input logic [31:0] vs, vt, imm,
+    input logic [31:0] hie, loe,
     output logic [4:0] rdE,
-    output logic [31:0] outE, vtE
+    output logic [31:0] outE, vtE, hiE, loE
 );
 
     logic alu_imm, alu_shamt;
@@ -33,6 +34,13 @@ module execute (
         .funct(alu_funct), 
         .in1(srcA), .in2(srcB), 
         .out(outE)
+    );
+
+    mult MULT(
+        .hie(hie), .loe(loe),
+        .in1(srcA), .in2(srcB),
+        .funct(alu_funct),
+        .hiE(hiE), .loE(loE)
     );
 
     assign rdE = rd;

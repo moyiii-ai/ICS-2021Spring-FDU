@@ -5,7 +5,7 @@ module decode (
     input logic [31:0] instr, pc,
     input logic [31:0] vs, vt,
     output logic j,
-    output logic [11:0] controlD,
+    output logic [15:0] controlD,
     output logic [4:0] rsD, rtD, rdD, shamtD,
     output logic [31:0] immD
 
@@ -13,11 +13,13 @@ module decode (
     /*control :
     sign_extend(1) + imm_type(2)
     reg_dst(2) + reg_write(1) + 
+    hi_read(1) + hi_write(1) + 
+    lo_read(1) + lo_write(1) + 
     strobe_type(2) + mem_extend(1) + 
     alu_shamt(1) + alu_imm(1) + alu_funct(4) +
     memtoreg(1) + mem_write(1)*/
     logic [5:0] op, funct;
-    logic [16:0] control;
+    logic [20:0] control;
     assign op = instr[31:26];
     assign funct = instr[5:0];
     assign rsD = instr[25:21];
@@ -25,50 +27,58 @@ module decode (
     always_comb begin
         if(op == `RTYPE) begin
             case(funct)
-                `ADDU:  control = 17'b0_00_01_1_00_0_0_0_0000_0_0;
-                `SUBU:  control = 17'b0_00_01_1_00_0_0_0_0001_0_0;
-                `AND:   control = 17'b0_00_01_1_00_0_0_0_0010_0_0;
-                `OR:    control = 17'b0_00_01_1_00_0_0_0_0011_0_0;
-                `NOR:   control = 17'b0_00_01_1_00_0_0_0_0100_0_0;
-                `XOR:   control = 17'b0_00_01_1_00_0_0_0_0101_0_0;
-                `SLL:   control = 17'b0_00_01_1_00_0_1_0_0110_0_0;
-                `SRA:   control = 17'b0_00_01_1_00_0_1_0_0111_0_0;
-                `SRL:   control = 17'b0_00_01_1_00_0_1_0_1000_0_0;
-                `SLLV:  control = 17'b0_00_01_1_00_0_1_0_0110_0_0;
-                `SRAV:  control = 17'b0_00_01_1_00_0_1_0_0111_0_0;
-                `SRLV:  control = 17'b0_00_01_1_00_0_1_0_1000_0_0;
-                `SLT:   control = 17'b0_00_01_1_00_0_0_0_1001_0_0;
-                `SLTU:  control = 17'b0_00_01_1_00_0_0_0_1010_0_0;
-                `JR:    control = 17'b0_00_00_0_00_0_0_0_0000_0_0;
-                `JALR:  control = 17'b0_11_01_1_00_0_0_1_1111_0_0;
-                default: control = 17'b0;
+                `ADDU:  control = 21'b0_00_01_1_0000_00_0_0_0_0000_0_0;
+                `SUBU:  control = 21'b0_00_01_1_0000_00_0_0_0_0001_0_0;
+                `AND:   control = 21'b0_00_01_1_0000_00_0_0_0_0010_0_0;
+                `OR:    control = 21'b0_00_01_1_0000_00_0_0_0_0011_0_0;
+                `NOR:   control = 21'b0_00_01_1_0000_00_0_0_0_0100_0_0;
+                `XOR:   control = 21'b0_00_01_1_0000_00_0_0_0_0101_0_0;
+                `SLL:   control = 21'b0_00_01_1_0000_00_0_1_0_0110_0_0;
+                `SRA:   control = 21'b0_00_01_1_0000_00_0_1_0_0111_0_0;
+                `SRL:   control = 21'b0_00_01_1_0000_00_0_1_0_1000_0_0;
+                `SLLV:  control = 21'b0_00_01_1_0000_00_0_1_0_0110_0_0;
+                `SRAV:  control = 21'b0_00_01_1_0000_00_0_1_0_0111_0_0;
+                `SRLV:  control = 21'b0_00_01_1_0000_00_0_1_0_1000_0_0;
+                `SLT:   control = 21'b0_00_01_1_0000_00_0_0_0_1001_0_0;
+                `SLTU:  control = 21'b0_00_01_1_0000_00_0_0_0_1010_0_0;
+                `MFHI:  control = 21'b0_00_01_0_1000_00_0_0_0_0000_0_0;
+                `MFLO:  control = 21'b0_00_01_0_0010_00_0_0_0_0000_0_0;
+                `MTHI:  control = 21'b0_00_00_0_0100_00_0_0_0_0000_0_0;
+                `MTLO:  control = 21'b0_00_00_0_0001_00_0_0_0_0000_0_0;
+                `MULT:  control = 21'b0_00_00_0_0101_00_0_0_0_1011_0_0;                
+                `MULTU: control = 21'b0_00_00_0_0101_00_0_0_0_1100_0_0;
+                `DIV:   control = 21'b0_00_00_0_0101_00_0_0_0_1101_0_0;
+                `DIVU:  control = 21'b0_00_00_0_0101_00_0_0_0_1110_0_0;
+                `JR:    control = 21'b0_00_00_0_0000_00_0_0_0_0000_0_0;
+                `JALR:  control = 21'b0_11_01_1_0000_00_0_0_1_1111_0_0;
+                default: control = 21'b0;
             endcase
         end
         else begin
             case(op)
-                `ADDIU: control = 17'b1_00_10_1_00_0_0_1_0000_0_0;
-                `ANDI:  control = 17'b0_00_10_1_00_0_0_1_0010_0_0;
-                `ORI:   control = 17'b0_00_10_1_00_0_0_1_0011_0_0;
-                `XORI:  control = 17'b0_00_10_1_00_0_0_1_0101_0_0;
-                `SLTI:  control = 17'b1_00_10_1_00_0_0_1_1001_0_0;
-                `SLTIU: control = 17'b1_00_10_1_00_0_0_1_1010_0_0;
-                `LUI:   control = 17'b0_01_10_1_00_0_0_1_1111_0_0;
-                `LW:    control = 17'b1_00_10_1_00_0_0_1_0000_1_0;
-                `LH:    control = 17'b1_00_10_1_01_1_0_1_0000_1_0;
-                `LHU:   control = 17'b1_00_10_1_01_0_0_1_0000_1_0;
-                `LB:    control = 17'b1_00_10_1_10_1_0_1_0000_1_0;
-                `LBU:   control = 17'b1_00_10_1_10_0_0_1_0000_1_0;
-                `SW:    control = 17'b1_00_00_0_00_0_0_1_0000_0_1;
-                `SH:    control = 17'b1_00_00_0_01_0_0_1_0000_0_1;
-                `SB:    control = 17'b1_00_00_0_10_0_0_1_0000_0_1;
-                `J:     control = 17'b0_00_00_0_00_0_0_0_0000_0_0;
-                `JAL:   control = 17'b0_11_11_1_00_0_0_1_1111_0_0;
+                `ADDIU: control = 21'b1_00_10_1_0000_00_0_0_1_0000_0_0;
+                `ANDI:  control = 21'b0_00_10_1_0000_00_0_0_1_0010_0_0;
+                `ORI:   control = 21'b0_00_10_1_0000_00_0_0_1_0011_0_0;
+                `XORI:  control = 21'b0_00_10_1_0000_00_0_0_1_0101_0_0;
+                `SLTI:  control = 21'b1_00_10_1_0000_00_0_0_1_1001_0_0;
+                `SLTIU: control = 21'b1_00_10_1_0000_00_0_0_1_1010_0_0;
+                `LUI:   control = 21'b0_01_10_1_0000_00_0_0_1_1111_0_0;
+                `LW:    control = 21'b1_00_10_1_0000_00_0_0_1_0000_1_0;
+                `LH:    control = 21'b1_00_10_1_0000_01_1_0_1_0000_1_0;
+                `LHU:   control = 21'b1_00_10_1_0000_01_0_0_1_0000_1_0;
+                `LB:    control = 21'b1_00_10_1_0000_10_1_0_1_0000_1_0;
+                `LBU:   control = 21'b1_00_10_1_0000_10_0_0_1_0000_1_0;
+                `SW:    control = 21'b1_00_00_0_0000_00_0_0_1_0000_0_1;
+                `SH:    control = 21'b1_00_00_0_0000_01_0_0_1_0000_0_1;
+                `SB:    control = 21'b1_00_00_0_0000_10_0_0_1_0000_0_1;
+                `J:     control = 21'b0_00_00_0_0000_00_0_0_0_0000_0_0;
+                `JAL:   control = 21'b0_11_11_1_0000_00_0_0_1_1111_0_0;
                 `REGIMM:
                     if((rtD == `BLTZAL) | (rtD == `BGEZAL))
-                        control = 17'b0_11_11_1_00_0_0_1_1111_0_0;
+                        control = 21'b0_11_11_1_00_0_0_1_1111_0_0;
                     else
-                        control = 17'b0;
-                default: control = 17'b0;
+                        control = 21'b0;
+                default: control = 21'b0;
             endcase
         end
     end
@@ -93,9 +103,9 @@ module decode (
     logic [1:0] reg_dst, imm_type;
     // reg_dst: 00:0  01:rd  10:rt  11:31
     //imm_tpye: 00:ext_imm 01:imm<<16 10:imm<<2 11:pc+8
-    assign sign_extend = control[16];
-    assign imm_type = control[15:14];
-    assign reg_dst = control[13:12];
+    assign sign_extend = control[20];
+    assign imm_type = control[19:18];
+    assign reg_dst = control[17:16];
 
     always_comb begin
         case(reg_dst)
