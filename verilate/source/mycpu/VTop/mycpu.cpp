@@ -30,7 +30,9 @@ auto MyCPU::get_writeback_wen() const -> word_t {
     /**
      * TODO (Lab2) retrieve writeback wen from verilated model :)
      */
-    return VTop->core__DOT__write_enableW;
+    if(VTop->core__DOT__write_enableW)
+        return 15;
+    return 0;
 }
 
 void MyCPU::print_status() {
