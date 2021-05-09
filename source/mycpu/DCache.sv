@@ -7,8 +7,8 @@ module DCache #(
     localparam int OFFSET_MAX = OFFSET_BITS - 1,
     localparam int INDEX_MAX = INDEX_BITS - 1,
     localparam int TAG_MAX = 31 - OFFSET_BITS - INDEX_BITS,
-    localparam int SET_MAX = (2 << INDEX_BITS) - 1,
-    localparam int LINE_MAX = (2 << (OFFSET_BITS - 2)) - 1
+    localparam int SET_MAX = (1 << INDEX_BITS) - 1,
+    localparam int LINE_MAX = (1 << (OFFSET_BITS - 2)) - 1
 ) (
     input logic clk, resetn,
 
@@ -83,13 +83,13 @@ module DCache #(
     assign dresp.data    = data[index][pos][offset[OFFSET_MAX:2]];
 
     // CBus driver
-    assign creq.valid = state == FLUSH || state == FETCH;
-    assign creq.is_write = state == FLUSH;
-    assign creq.size = MSIZE4;
-    assign creq.addr = {meta[index][pos].tag, index, 4'b0000};
-    assign creq.strobe = 4'b1111;
-    assign creq.data = data[index][pos][offset_in];
-    assign creq.len = MLEN4;
+    assign dcreq.valid = state == FLUSH || state == FETCH;
+    assign dcreq.is_write = state == FLUSH;
+    assign dcreq.size = MSIZE4;
+    assign dcreq.addr = {meta[index][pos].tag, index, 4'b0000};
+    assign dcreq.strobe = 4'b1111;
+    assign dcreq.data = data[index][pos][offset_in];
+    assign dcreq.len = MLEN4;
 
     always_ff @(posedge clk)
         if (resetn) begin
@@ -109,7 +109,7 @@ module DCache #(
                 end
 
                 HIT: begin
-                    if (req.strobe) begin
+                    if (req.strobe != 4'b0000) begin
                         data[index][pos][offset[OFFSET_MAX:2]] <= req.data;
                         meta[index][pos].valid <= 0;
                         meta[index][pos].dirty <= 1;
@@ -130,8 +130,8 @@ module DCache #(
                     meta[index][pos].dirty <= 0;
                 end
 
-                FETCH: if(cresp.ready) begin
-                    if(cresp.last) begin
+                FETCH: if(dcresp.ready) begin
+                    if(dcresp.last) begin
                         state <= READY;
                         meta[index][pos].valid <= 1;
                         meta[index][pos].dirty <= 0;
@@ -141,8 +141,8 @@ module DCache #(
                     end
                 end
 
-                FLUSH: if(cresp.ready) begin
-                    if(cresp.last) begin
+                FLUSH: if(dcresp.ready) begin
+                    if(dcresp.last) begin
                         state <= HIT;
                         meta[index][pos].valid <= 0;
                         meta[index][pos].dirty <= 0;
@@ -157,6 +157,11 @@ module DCache #(
                     state <= IDLE;
                 end
 
+                default: begin
+                    state <= IDLE;
+                    {req, offset} <= '0;
+                end
+
             endcase
         end else begin
             state <= IDLE;
@@ -164,6 +169,6 @@ module DCache #(
         end
 
     // remove following lines when you start
-    /*assign {dresp, dcreq} = '0;
-    `UNUSED_OK({clk, resetn, dreq, dcresp});*/
+    /*assign {dresp, dcreq} = '0;*/
+    `UNUSED_OK({req, offset, dcresp});
 endmodule

@@ -27,7 +27,7 @@ auto CacheRefModel::load(addr_t addr, AXISize size) -> word_t {
      */
     log_debug("ref: load(0x%x, %d)\n", addr, 1 << size);
     int index = (addr / 16) & 3;
-    return c[index].read(addr);
+    return read(index, addr);
 }
 
 void CacheRefModel::store(addr_t addr, AXISize size, word_t strobe, word_t data) {
@@ -38,7 +38,7 @@ void CacheRefModel::store(addr_t addr, AXISize size, word_t strobe, word_t data)
     log_debug("ref: store(0x%x, %d, %x, \"%08x\")\n", addr, 1 << size, strobe, data);
     
     int index = (addr / 16) & 3;
-    c[index].write(addr, strobe, data);
+    write(index, addr, strobe, data);
 }
 
 void CacheRefModel::check_internal() {
@@ -54,10 +54,10 @@ void CacheRefModel::check_internal() {
     for(int i = 0; i < 4; ++i) 
         for(int j = 0; j < 4; ++j){
         asserts(
-            c[i].a[j] == VCacheTop->mem[i][j],
+            c[i].a[j] == scope->mem[i][j],
             "reference model's internal state is different from RTL model."
             " at mem[%x][%y], expected = %08x, got = %08x",
-            i, j, c[i].a[j], VCacheTop->mem[i][j]
+            i, j, c[i].a[j], scope->mem[i][j]
         );
     }
 
