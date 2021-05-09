@@ -24,7 +24,7 @@ module DCache #(
     typedef logic[TAG_MAX:0] tag_t;
     typedef logic[INDEX_MAX:0] index_t;
     typedef logic[OFFSET_MAX:0] offset_t;
-    typedef [1:0] position_t;
+    typedef logic[1:0] position_t;
 
     typedef struct packed {
         tag_t tag;
