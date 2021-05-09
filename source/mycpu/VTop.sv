@@ -11,47 +11,56 @@ module VTop (
 );
     `include "bus_decl"
 
-    ibus_req_t  ireq;
-    ibus_resp_t iresp;
-    dbus_req_t  dreq;
-    dbus_resp_t dresp;
-    cbus_req_t  icreq,  dcreq;
-    cbus_resp_t icresp, dcresp;
+    ibus_req_t  ireq, cireq;
+    ibus_resp_t iresp, ciresp, myiresp;
+    dbus_req_t  dreq, cdreq;
+    dbus_resp_t dresp, cdresp, mydresp;
+    cbus_req_t  icreq,  dcreq, cicreq, cdcreq;
+    cbus_resp_t icresp, dcresp, cicresp, cdcresp;
+
+    logic iuncached, duncached;
 
     ibus_req_t myireq;
     dbus_req_t mydreq;
 
     MyCore core(
         .clk(clk), .resetn(resetn),
-        .ireq(myireq), .iresp(iresp),
-        .dreq(mydreq), .dresp(dresp)
+        .ireq(myireq), .iresp(myiresp),
+        .dreq(mydreq), .dresp(mydresp)
     );
-    IBusToCBus icvt(.*);
-    DBusToCBus dcvt(.*);
 
-    /**
-     * TODO (Lab2) replace mux with your own arbiter :)
-     */
-    CBusArbiter mux(
-        .ireqs({icreq, dcreq}),
-        .iresps({icresp, dcresp}),
+    assign myiresp = iuncached ? iresp : ciresp;
+    assign mydresp = duncached ? dresp : cdresp;
+
+    ICache icvt(.ireq(cireq), .iresp(ciresp), .icreq(cicreq), .icresp(cdcresp));
+    DCache dcvt(.dreq(cdreq), .dresp(cdresp), .dcreq(cdcreq), .dcresp(cdcresp));
+    IBusToCBus icvt(.ireq(ireq), .iresp(iresp), .icreq(icreq), .icresp(dcresp));
+    DBusToCBus dcvt(.dreq(dreq), .dresp(dresp), .dcreq(dcreq), .dcresp(dcresp));
+
+    CBusArbiter #(.NUM_INPUTS(4)) mux(
+        .ireqs({icreq, dcreq, cicreq, cdcreq}),
+        .iresps({icresp, dcresp, cicresp, cdcresp}),
         .*
     );
 
-    /**
-     * TODO (optional) add address translation for oreq.addr :)
-     */
+    translation translation1(.vaddr(myireq.addr), .paddr(ireq.addr), .uncached(iuncached));
+    translation translation2(.vaddr(mydreq.addr), .paddr(dreq.addr), .uncached(duncached));
 
+    assign ireq.valid = myireq.valid & iuncached;
+    assign cireq.valid = myireq.valid & (~iuncached);
+    assign cireq.addr = ireq.addr;
 
-    translation translation1(.vaddr(myireq.addr), .paddr(ireq.addr));
-    translation translation2(.vaddr(mydreq.addr), .paddr(dreq.addr));
+    assign dreq.valid = mydreq.valid & duncached;
+    assign cdreq.valid = mydreq.valid & (~duncached);
+    assign cdreq.addr = dreq.addr;
 
-    assign ireq.valid = myireq.valid;
-
-    assign dreq.valid = mydreq.valid;
     assign dreq.size = mydreq.size;
     assign dreq.strobe = mydreq.strobe;
     assign dreq.data = mydreq.data;
+    
+    assign cdreq.size = mydreq.size;
+    assign cdreq.strobe = mydreq.strobe;
+    assign cdreq.data = mydreq.data;
 
     `UNUSED_OK({ext_int});
 endmodule

@@ -109,18 +109,10 @@ module DCache #(
                 end
 
                 HIT: begin
-                    if (req.strobe != 4'b0000) begin
-                        data[index][pos][offset[OFFSET_MAX:2]] <= req.data;
-                        meta[index][pos].valid <= 0;
-                        meta[index][pos].dirty <= 1;
-                        state <= IDLE;
-                    end
-                    else begin
-                        if(~(meta[index][pos].valid | meta[index][pos].dirty))
-                            state <= FETCH;
-                        else
-                            state <= READY;
-                    end
+                    if(~(meta[index][pos].valid | meta[index][pos].dirty))
+                        state <= FETCH;
+                    else
+                        state <= READY;
                 end
 
                 MISS: begin
@@ -154,6 +146,11 @@ module DCache #(
                 end
 
                 READY: begin
+                    if (req.strobe != 4'b0000) begin
+                        data[index][pos][offset[OFFSET_MAX:2]] <= req.data;
+                        meta[index][pos].valid <= 0;
+                        meta[index][pos].dirty <= 1;
+                    end
                     state <= IDLE;
                 end
 

@@ -3,7 +3,8 @@ typedef logic [31:0] vaddr_t;
 
 module translation(
     input vaddr_t vaddr, // virtual address
-    output paddr_t paddr // physical address
+    output paddr_t paddr, // physical address
+    output logic uncached
 );
     assign paddr[27:0] = vaddr[27:0];
     always_comb begin
@@ -15,4 +16,5 @@ module translation(
             default: paddr[31:28] = vaddr[31:28]; // useg, ksseg, kseg3
         endcase
     end
+    assign uncached = (paddr >= 32'ha0000000) & (paddr <= 32'hbfffffff);
 endmodule
