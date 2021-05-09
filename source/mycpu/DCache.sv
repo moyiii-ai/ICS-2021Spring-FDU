@@ -63,7 +63,7 @@ module DCache #(
     always_comb begin
         pos = 2'b00;
 
-        unique if (foo[0].tag == tag)
+        if (foo[0].tag == tag)
             pos = 2'b00;
         else if (foo[1].tag == tag)
             pos = 2'b01;
@@ -93,7 +93,7 @@ module DCache #(
 
     always_ff @(posedge clk)
         if (resetn) begin
-            unique case (state)
+            case (state)
                 IDLE: if(dreq.valid) begin
                     {tag, index, offset} <= dreq.addr;
                     req <= dreq;

@@ -16,6 +16,8 @@ void CacheRefModel::reset() {
      */
 
     log_debug("ref: reset()\n");
+    for(int i = 0; i < 4; ++i)
+        c[i].clear();
     mem.reset();
 }
 
@@ -23,9 +25,9 @@ auto CacheRefModel::load(addr_t addr, AXISize size) -> word_t {
     /**
      * TODO (Lab3) implement load operation for reference model :)
      */
-
     log_debug("ref: load(0x%x, %d)\n", addr, 1 << size);
-    return mem.load(0x0);
+    int index = (addr / 16) & 3;
+    return c[index].read(addr);
 }
 
 void CacheRefModel::store(addr_t addr, AXISize size, word_t strobe, word_t data) {
@@ -34,7 +36,9 @@ void CacheRefModel::store(addr_t addr, AXISize size, word_t strobe, word_t data)
      */
 
     log_debug("ref: store(0x%x, %d, %x, \"%08x\")\n", addr, 1 << size, strobe, data);
-    mem.store(0x0, 0xdeadbeef, 0b1111);
+    
+    int index = (addr / 16) & 3;
+    c[index].write(addr, strobe, data);
 }
 
 void CacheRefModel::check_internal() {
@@ -46,6 +50,16 @@ void CacheRefModel::check_internal() {
      */
 
     log_debug("ref: check_internal()\n");
+
+    for(int i = 0; i < 4; ++i) 
+        for(int j = 0; j < 4; ++j){
+        asserts(
+            c[i].a[j] == VCacheTop->mem[i][j],
+            "reference model's internal state is different from RTL model."
+            " at mem[%x][%y], expected = %08x, got = %08x",
+            i, j, c[i].a[j], VCacheTop->mem[i][j]
+        );
+    }
 
     /**
      * the following comes from StupidBuffer's reference model.
@@ -75,5 +89,7 @@ void CacheRefModel::check_memory() {
     /**
      * the following comes from StupidBuffer's reference model.
      */
-    asserts(mem.dump(0, mem.size()) == top->dump(), "reference model's memory content is different from RTL model");
+    asserts(
+        mem.dump(0, mem.size()) == top->dump(), 
+        "reference model's memory content is different from RTL model");
 }

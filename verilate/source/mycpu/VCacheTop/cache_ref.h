@@ -27,5 +27,52 @@ private:
      */
 
     // int state;
+    struct cacheline {
+        word_t a[4][4];
+        int tag[4], dirty[4];
+        void clear() {
+            for(int i = 0; i < 4; ++i)
+                tag[i] = -1, dirty[i] = 0;
+        }
+        int find(addr_t addr) {
+            int nt = addr / 64, pos = -1;
+            for(int i = 0; i < 4; ++i)
+                if(tag[i] == nt)
+                    pos = i;
+            if(pos != -1)  return pos;
+            
+            int n1 = nt & 3;
+            int n2 = (nt / 4) & 3;
+            int n3 = (nt / 16) & 3;
+            int n4 = (nt / 64) & 3;
+            pos = n1 ^ n2 ^ n3 ^ n4;
+            
+            addr_t oldaddr = tag[pos] * 64 + (addr & 64);
+            if(dirty[pos])
+                for(int i = 0; i < 4; ++i) {
+                    mem.store(oldaddr + 4 * i, a[pos][i], STROBE_TO_MASK[15]);
+            for(int i = 0; i < 4; ++i)
+                a[pos][i] = mem.load(addr + 4 * i);
+            tag[pos] = nt;
+            dirty[pos] = 0;
+            return pos;
+        }
+
+        word_t read(addr_t addr) {
+            int pos = find(addr);
+            int offset = (addr / 4) & 3;
+            return a[pos][offset];
+        }
+
+        void write(addr_t addr, word_t strobe, word_t data) {
+            int pos = find(addr);
+            int offset = (addr / 4) & 3;
+            auto mask = STROBE_TO_MASK[strobe];
+            auto value = a[pos][offset];
+            value = (data & mask) | (value & ~mask);
+            a[pos][offset] = value;
+            dirty[pos] = 1;
+        }
+    }c[4];
     BlockMemory mem;
 };
