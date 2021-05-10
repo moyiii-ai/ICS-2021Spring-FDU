@@ -41,7 +41,7 @@ module DCache #(
         FETCH,
         FLUSH,
         READY
-    } state_t;
+    } state_t /* verilator public */;
 
     typedef word_t [LINE_MAX:0] cache_line_t;
     typedef cache_line_t [3:0] cache_set_t;
@@ -51,7 +51,7 @@ module DCache #(
 
     dbus_req_t req;
     tag_t tag;
-    state_t state;
+    state_t state /* verilator public_flat_rd */;
     index_t index;
     offset_t offset;
 
@@ -90,6 +90,20 @@ module DCache #(
     assign dcreq.strobe = 4'b1111;
     assign dcreq.data = data[index][pos][offset_in];
     assign dcreq.len = MLEN4;
+
+    word_t value;
+
+    always_comb begin
+        value = data[index][pos][offset[OFFSET_MAX:2]];
+        if(req.strobe[0])
+            value[7:0] = req.data[7:0];
+        if(req.strobe[1])
+            value[15:8] = req.data[15:8];
+        if(req.strobe[2])
+            value[23:16] = req.data[23:16];
+        if(req.strobe[3])
+            value[31:24] = req.data[31:24];
+    end
 
     always_ff @(posedge clk)
         if (resetn) begin
@@ -134,6 +148,7 @@ module DCache #(
                 end
 
                 FLUSH: if(dcresp.ready) begin
+                    data[index][pos][offset_in] <= dcresp.data;
                     if(dcresp.last) begin
                         state <= HIT;
                         meta[index][pos].valid <= 0;
@@ -147,7 +162,7 @@ module DCache #(
 
                 READY: begin
                     if (req.strobe != 4'b0000) begin
-                        data[index][pos][offset[OFFSET_MAX:2]] <= req.data;
+                        data[index][pos][offset[OFFSET_MAX:2]] <= value;
                         meta[index][pos].valid <= 0;
                         meta[index][pos].dirty <= 1;
                     end
@@ -163,9 +178,10 @@ module DCache #(
         end else begin
             state <= IDLE;
             {req, offset} <= '0;
+            meta <= '0;
         end
 
     // remove following lines when you start
     /*assign {dresp, dcreq} = '0;*/
-    `UNUSED_OK({req, offset, dcresp});
+    `UNUSED_OK({req, offset});
 endmodule

@@ -38,7 +38,7 @@ void CacheRefModel::store(addr_t addr, AXISize size, word_t strobe, word_t data)
     log_debug("ref: store(0x%x, %d, %x, \"%08x\")\n", addr, 1 << size, strobe, data);
     
     int index = (addr / 16) & 3;
-    write(index, addr, strobe, data);
+    update(index, addr, strobe, data);
 }
 
 void CacheRefModel::check_internal() {
@@ -52,14 +52,16 @@ void CacheRefModel::check_internal() {
     log_debug("ref: check_internal()\n");
 
     for(int i = 0; i < 4; ++i) 
-        for(int j = 0; j < 4; ++j){
-        asserts(
-            c[i].a[j] == scope->mem[i][j],
-            "reference model's internal state is different from RTL model."
-            " at mem[%x][%y], expected = %08x, got = %08x",
-            i, j, c[i].a[j], scope->mem[i][j]
-        );
-    }
+        for(int j = 0; j < 4; ++j)
+            for(int k = 0; k < 4; ++k) {
+                if(!c[i].vi[j][k])  continue;
+                asserts(
+                    c[i].a[j][k] == scope->mem[i * 16 + j * 4 + k],
+                    "reference model's internal state is different from RTL model."
+                    " at mem[%x][%x][%x], expected = %08x, got = %08x",
+                    i, j, k, c[i].a[j][k], scope->mem[i * 16 + j * 4 + k]
+                );
+            }
 
     /**
      * the following comes from StupidBuffer's reference model.

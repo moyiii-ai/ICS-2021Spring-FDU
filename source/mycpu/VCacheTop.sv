@@ -45,14 +45,16 @@ module VCacheTop (
     //     assign mem[i] = top.xxx.yyy.zzz.lutrams[i].ram_inst.behavioral.mem;
     // end
 
-    typedef word_t [3:0] cache_line_t;
-    typedef cache_line_t [3:0] cache_set_t;
 
     /* verilator tracing_off */
-    cache_set_t [3:0] mem /* verilator public_flat_rd */;
+    word_t [63:0] mem /* verilator public_flat_rd */;
     /* verilator tracing_on */
 
     for (genvar i = 0; i < 4; i++) begin
-        assign mem[i] = top.data[i];
+        for (genvar j = 0; j < 4; j++) begin
+            for (genvar k = 0; k < 4; k++) begin
+                assign mem[i * 16 + j * 4 + k] = top.data[i][j][k];
+            end
+        end
     end
 endmodule

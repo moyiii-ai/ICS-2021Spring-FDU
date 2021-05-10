@@ -30,10 +30,13 @@ private:
     BlockMemory mem;
     struct cacheline {
         word_t a[4][4];
-        int tag[4], dirty[4];
+        int tag[4], dirty[4], vi[4][4];
         void clear() {
-            for(int i = 0; i < 4; ++i)
+            for(int i = 0; i < 4; ++i) {
                 tag[i] = -1, dirty[i] = 0;
+                for(int j = 0; j < 4; ++j)
+                    vi[i][j] = 0;
+            }
         }
     }c[4];
 
@@ -67,13 +70,14 @@ private:
         return c[v].a[pos][offset];
     }
 
-    void write(int v, addr_t addr, word_t strobe, word_t data) {
+    void update(int v, addr_t addr, word_t strobe, word_t data) {
         int pos = find(v, addr);
         int offset = (addr / 4) & 3;
         auto mask = STROBE_TO_MASK[strobe];
         auto value = c[v].a[pos][offset];
         value = (data & mask) | (value & ~mask);
         c[v].a[pos][offset] = value;
+        c[v].vi[pos][offset] = 1;
         c[v].dirty[pos] = 1;
     }
     
