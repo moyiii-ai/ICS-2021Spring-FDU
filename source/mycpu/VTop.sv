@@ -38,8 +38,8 @@ module VTop (
     DBusToCBus bdcvt(.dreq(dreq), .dresp(dresp), .dcreq(dcreq), .dcresp(dcresp));
 
     CBusArbiter #(.NUM_INPUTS(4)) mux(
-        .ireqs({icreq, dcreq, cicreq, cdcreq}),
-        .iresps({icresp, dcresp, cicresp, cdcresp}),
+        .ireqs({icreq, cicreq, dcreq, cdcreq}),
+        .iresps({icresp, cicresp, dcresp, cdcresp}),
         .*
     );
 

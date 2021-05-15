@@ -26,7 +26,7 @@ module hazard(
     assign stallj = (op == `RTYPE) & (funct == `JR) & regWriteE & (rde == rsD);
 
     assign stallrm = dreq.valid & (dreq.strobe == 4'b0) & (~dresp.data_ok);
-    assign stallwm = dreq.valid & (dreq.strobe != 4'b0) & (~dresp.addr_ok);  
+    assign stallwm = dreq.valid & (dreq.strobe != 4'b0) & (~dresp.data_ok);  
     assign stallM = stallrm | stallwm;
     assign stalli = ireq.valid & (~iresp.data_ok); 
     assign stall = stallb1 | stallb2 | stallw | stallj | stalli | stallM;

@@ -15,7 +15,7 @@
 5. 缓存的状态为：IDLE、SEARCH、HIT、MISS、FETCH、FLUSH、READY，分别表示空、寻找缓存、命中、不命中、读内存、写内存、读完毕。处理具体事件经过的状态如下：
 6. 读hit： IDLE->SEARCH->HIT->READY->IDLE
 7. 读miss： IDLE->SEARCH->MISS(->FLUSH)->HIT->FETCH->READY->IDLE
-8. 写hit： IDLE->SEARCH->HIT->IDLE
+8. 写hit： IDLE->SEARCH->HIT->READY->IDLE
 9. 写miss： IDLE->SEARCH->MISS(->FLUSH)->HIT->FETCH->READY->IDLE
 
 
@@ -24,6 +24,9 @@
 
 1. 在关联度为$2^k$的缓存中实现`LRU`算法，每个cache set要记录所有cache line的出现次序，有$2^k$个cache line，出现次序也需要$2^k$位表示，共$2^{2k}$位额外信息。
 2. 缓存重置时，在我的实现中不需要将数据重置，但是需要把cache line状态相关量清零。因为dirty和valid都为0时一定会进入FETCH状态和内存取得同步，所以不重置数据不会有影响。不重置则需要注意处理数据初始化问题，重置则需要考虑reset时间不够的问题。
+3. 相邻的流水线阶段 X 和 Y 间有一对握手信号 `valid` 和 `ready`。阶段 X 在阶段 Y 之前。`valid` 表示阶段 X 已经执行完成，可以进入到阶段 Y。`ready` 表示阶段 Y 已经执行完成，阶段 X 的数据可以进入。
+   - 假设流水线只有最后一个阶段可能需要多个周期，其余阶段只需要一个周期。最后一个阶段使`ready`为0，则之前每个阶段的`ready`都相应地为0，可阻塞第一阶段数据进入，延时为最后一阶段所需的周期数。
+   - 将最后一个阶段切分为多个阶段，使每个阶段周期数较小，可减少上一问中握手信号的延时。
 
 
 
@@ -35,4 +38,6 @@
 
    ![avator](3a2.png)
 
-2. 
+2. 上板
+
+   ![avator](board.jpg)
