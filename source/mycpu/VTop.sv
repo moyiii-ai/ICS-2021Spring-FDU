@@ -32,10 +32,10 @@ module VTop (
     assign myiresp = iuncached ? iresp : ciresp;
     assign mydresp = duncached ? dresp : cdresp;
 
-    ICache icvt(.ireq(cireq), .iresp(ciresp), .icreq(cicreq), .icresp(cdcresp));
-    DCache dcvt(.dreq(cdreq), .dresp(cdresp), .dcreq(cdcreq), .dcresp(cdcresp));
-    IBusToCBus icvt(.ireq(ireq), .iresp(iresp), .icreq(icreq), .icresp(dcresp));
-    DBusToCBus dcvt(.dreq(dreq), .dresp(dresp), .dcreq(dcreq), .dcresp(dcresp));
+    ICache icvt(.clk(clk), .resetn(resetn), .ireq(cireq), .iresp(ciresp), .icreq(cicreq), .icresp(cicresp));
+    DCache dcvt(.clk(clk), .resetn(resetn), .dreq(cdreq), .dresp(cdresp), .dcreq(cdcreq), .dcresp(cdcresp));
+    IBusToCBus bicvt(.ireq(ireq), .iresp(iresp), .icreq(icreq), .icresp(icresp));
+    DBusToCBus bdcvt(.dreq(dreq), .dresp(dresp), .dcreq(dcreq), .dcresp(dcresp));
 
     CBusArbiter #(.NUM_INPUTS(4)) mux(
         .ireqs({icreq, dcreq, cicreq, cdcreq}),

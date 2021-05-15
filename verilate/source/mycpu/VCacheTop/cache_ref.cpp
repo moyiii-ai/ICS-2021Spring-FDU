@@ -52,9 +52,10 @@ void CacheRefModel::check_internal() {
     log_debug("ref: check_internal()\n");
 
     for(int i = 0; i < 4; ++i) 
-        for(int j = 0; j < 4; ++j)
+        for(int j = 0; j < 4; ++j) {
+            if(!c[i].valid[j])
+                continue;
             for(int k = 0; k < 4; ++k) {
-                if(!c[i].vi[j][k])  continue;
                 asserts(
                     c[i].a[j][k] == scope->mem[i * 16 + j * 4 + k],
                     "reference model's internal state is different from RTL model."
@@ -62,6 +63,7 @@ void CacheRefModel::check_internal() {
                     i, j, k, c[i].a[j][k], scope->mem[i * 16 + j * 4 + k]
                 );
             }
+        }
 
     /**
      * the following comes from StupidBuffer's reference model.

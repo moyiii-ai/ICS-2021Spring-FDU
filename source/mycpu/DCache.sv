@@ -41,7 +41,7 @@ module DCache #(
         FETCH,
         FLUSH,
         READY
-    } state_t /* verilator public */;
+    } state_t;
 
     typedef word_t [LINE_MAX:0] cache_line_t;
     typedef cache_line_t [3:0] cache_set_t;
@@ -51,7 +51,7 @@ module DCache #(
 
     dbus_req_t req;
     tag_t tag;
-    state_t state /* verilator public_flat_rd */;
+    state_t state;
     index_t index;
     offset_t offset;
 
@@ -130,13 +130,18 @@ module DCache #(
                 end
 
                 MISS: begin
-                    state <= (meta[index][pos].dirty) ? FLUSH : HIT;
-                    meta[index][pos].tag <= tag;
-                    meta[index][pos].valid <= 0;
-                    meta[index][pos].dirty <= 0;
+                    if(meta[index][pos].dirty)
+                        state <= FLUSH;
+                    else  begin
+                        state <= HIT;
+                        meta[index][pos].tag <= tag;
+                        meta[index][pos].valid <= 0;
+                        meta[index][pos].dirty <= 0;
+                    end                    
                 end
 
                 FETCH: if(dcresp.ready) begin
+                    data[index][pos][offset_in] <= dcresp.data;
                     if(dcresp.last) begin
                         state <= READY;
                         meta[index][pos].valid <= 1;
@@ -148,9 +153,9 @@ module DCache #(
                 end
 
                 FLUSH: if(dcresp.ready) begin
-                    data[index][pos][offset_in] <= dcresp.data;
                     if(dcresp.last) begin
                         state <= HIT;
+                        meta[index][pos].tag <= tag;
                         meta[index][pos].valid <= 0;
                         meta[index][pos].dirty <= 0;
                         offset_in <= 2'b00;

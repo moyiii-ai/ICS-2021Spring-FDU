@@ -30,13 +30,10 @@ private:
     BlockMemory mem;
     struct cacheline {
         word_t a[4][4];
-        int tag[4], dirty[4], vi[4][4];
+        int tag[4], dirty[4], valid[4];
         void clear() {
-            for(int i = 0; i < 4; ++i) {
-                tag[i] = -1, dirty[i] = 0;
-                for(int j = 0; j < 4; ++j)
-                    vi[i][j] = 0;
-            }
+            for(int i = 0; i < 4; ++i)
+                tag[i] = -1, dirty[i] = valid[i] = 0;
         }
     }c[4];
 
@@ -53,14 +50,16 @@ private:
         int n4 = (nt / 64) & 3;
         pos = n1 ^ n2 ^ n3 ^ n4;
         
-        addr_t oldaddr = c[v].tag[pos] * 64 + (addr & 64);
+        addr_t oldaddr = c[v].tag[pos] * 64 + (v * 16);
         if(c[v].dirty[pos])
             for(int i = 0; i < 4; ++i)
-                mem.store(oldaddr + 4 * i, c[v].a[pos][i], STROBE_TO_MASK[15]);
-        for(int i = 0; i < 4; ++i)
-            c[v].a[pos][i] = mem.load(addr + 4 * i);
+                mem.store(oldaddr + 4 * i, c[v].a[pos][i], 0xffffffff);
+        addr_t newaddr = nt * 64 + (v * 16);
+        for(int i = 0; i < 4; ++i) 
+            c[v].a[pos][i] = mem.load(newaddr + 4 * i);
         c[v].tag[pos] = nt;
         c[v].dirty[pos] = 0;
+        c[v].valid[pos] = 1;
         return pos;
     }
 
@@ -75,9 +74,9 @@ private:
         int offset = (addr / 4) & 3;
         auto mask = STROBE_TO_MASK[strobe];
         auto value = c[v].a[pos][offset];
+        
         value = (data & mask) | (value & ~mask);
         c[v].a[pos][offset] = value;
-        c[v].vi[pos][offset] = 1;
         c[v].dirty[pos] = 1;
     }
     

@@ -16,5 +16,5 @@ module translation(
             default: paddr[31:28] = vaddr[31:28]; // useg, ksseg, kseg3
         endcase
     end
-    assign uncached = (paddr >= 32'ha0000000) & (paddr <= 32'hbfffffff);
+    assign uncached = (paddr[31:28] == 4'ha) | (paddr[31:28] == 4'hb);
 endmodule
