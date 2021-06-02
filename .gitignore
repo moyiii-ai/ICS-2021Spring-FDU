@@ -2,4 +2,6 @@
 build/*
 !build/.gitkeep
 .vscode/
+*.gtkw
+*.fst
 vivado/*
