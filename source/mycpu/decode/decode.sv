@@ -3,8 +3,10 @@
 
 module decode (
     input logic [31:0] instr, pc,
+    input logic AddrError, 
     input logic [31:0] vs, vt,
-    output logic j,
+    output logic j, cp_read, cp_write,
+    output logic [6:0] error,
     output logic [15:0] controlD,
     output logic [4:0] rsD, rtD, rdD, shamtD,
     output logic [31:0] immD
@@ -12,7 +14,7 @@ module decode (
 );
     /*control :
     sign_extend(1) + imm_type(2)
-    reg_dst(2) + reg_write(1) + 
+    reg_dst(2) + reg_write(1) +
     hi_read(1) + hi_write(1) + 
     lo_read(1) + lo_write(1) + 
     strobe_type(2) + mem_extend(1) + 
@@ -24,11 +26,25 @@ module decode (
     assign funct = instr[5:0];
     assign rsD = instr[25:21];
     assign rtD = instr[20:16];
+
+    assign cp_read = (op == `CPC0) & (rsD == `MF);
+    assign cp_write = (op == `CPC0) & (rsD == `MT);
+
+    assign error[6] = (op == `CPC0) & (instr[5:0] == `ERET);
+    assign error[5] = ((op == `RTYPE) & ((funct == `ADD) | (funct == `SUB))) | (op == `ADDI);
+    assign error[4] = 0;
+    assign error[3] = AddrError;
+    assign error[2] = ((op == `RTYPE) & (funct == `BREAK));
+    assign error[1] = ((op == `RTYPE) & (funct == `SYSCALL)); 
+ 
     always_comb begin
+        error[0] = 0;
         if(op == `RTYPE) begin
             case(funct)
                 `ADDU:  control = 21'b0_00_01_1_0000_00_0_0_0_0000_0_0;
+                `ADD:   control = 21'b0_00_01_1_0000_00_0_0_0_0000_0_0;
                 `SUBU:  control = 21'b0_00_01_1_0000_00_0_0_0_0001_0_0;
+                `SUB:   control = 21'b0_00_01_1_0000_00_0_0_0_0001_0_0;
                 `AND:   control = 21'b0_00_01_1_0000_00_0_0_0_0010_0_0;
                 `OR:    control = 21'b0_00_01_1_0000_00_0_0_0_0011_0_0;
                 `NOR:   control = 21'b0_00_01_1_0000_00_0_0_0_0100_0_0;
@@ -56,12 +72,18 @@ module decode (
                 `DIVU:  control = 21'b0_00_00_0_0101_00_0_0_0_1110_0_0;
                 `JR:    control = 21'b0_00_00_0_0000_00_0_0_0_0000_0_0;
                 `JALR:  control = 21'b0_11_01_1_0000_00_0_0_1_1111_0_0;
-                default: control = 21'b0;
+                `BREAK: control = 21'b0;
+                `SYSCALL: control = 21'b0;
+                default: begin
+                    control = 21'b0;
+                    error[0] = 1;
+                end
             endcase
         end
         else begin
             case(op)
                 `ADDIU: control = 21'b1_00_10_1_0000_00_0_0_1_0000_0_0;
+                `ADDI:  control = 21'b1_00_10_1_0000_00_0_0_1_0000_0_0;
                 `ANDI:  control = 21'b0_00_10_1_0000_00_0_0_1_0010_0_0;
                 `ORI:   control = 21'b0_00_10_1_0000_00_0_0_1_0011_0_0;
                 `XORI:  control = 21'b0_00_10_1_0000_00_0_0_1_0101_0_0;
@@ -78,12 +100,30 @@ module decode (
                 `SB:    control = 21'b1_00_00_0_0000_10_0_0_1_0000_0_1;
                 `J:     control = 21'b0_00_00_0_0000_00_0_0_0_0000_0_0;
                 `JAL:   control = 21'b0_11_11_1_0000_00_0_0_1_1111_0_0;
-                `REGIMM:
+                `REGIMM: begin
                     if((rtD == `BLTZAL) | (rtD == `BGEZAL))
                         control = 21'b0_11_11_1_0000_00_0_0_1_1111_0_0;
-                    else
+                    else begin
                         control = 21'b0;
-                default: control = 21'b0;
+                        error[0] = 1;
+                    end
+                end
+                `CPC0: begin
+                    if(rsD == `MT)
+                        control = 21'b0;
+                    else if(rsd == `MF)
+                        control = 21'b0_00_10_1_0000_00_0_0_0_0000_0_0;
+                    else if((instr[25] == 1) & (instr[5:0] == `ERET))
+                        control = 21'b0;
+                    else begin
+                        control = 21'b0;
+                        error[0] = 1;
+                    end
+                end
+                default: begin
+                    control = 21'b0;
+                    error[0] = 1;
+                end
             endcase
         end
     end

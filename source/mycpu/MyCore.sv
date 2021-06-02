@@ -2,27 +2,33 @@
 
 module MyCore (
     input logic clk, resetn,
+    input i6 ext_int, 
 
     output ibus_req_t  ireq,
     input  ibus_resp_t iresp,
     output dbus_req_t  dreq,
     input  dbus_resp_t dresp
 );
-    logic [31:0] pcD, pcE, pcM;
-    logic [31:0] pcF, instrF;
+    logic [31:0] pcD, pcE, pcM, pcF, instrF;
     logic [31:0] pcW /* verilator public_flat_rd */;
+    logic [31:0] BadVaddrF;
+    logic AddrErrorF, inslotF;
 
     fetch Fetch(
         .pc(pcD), .instr(instrD), .vs(vsHD),
         .j(jD), .clk(clk), .stall(stall), .resetn(resetn),
         .iresp(iresp),
         .ireq(ireq),
-        .pcF(pcF), .instrF(instrF)
+        .insolt(inslotF), .AddrError(AddrErrorF)
+        .pcF(pcF), .instrF(instrF),
+        .BadVaddr(BadVaddrF)
     );
 
-    logic [31:0] vsD, vtD, immD, instrD;
+    logic [31:0] vsD, vtD, immD;
+    logic [31:0] instrD, BadVaddrD;
     logic [4:0] rsD, rtD, rdD, shamtD;
-    logic jD;
+    logic jD, cp_readD, cp_writeD, AddrErrorD, inslotD;
+    logic [6:0] errorD;
     logic [15:0] controlD;
     regfile Regfile(
         .clk(clk),
@@ -42,9 +48,11 @@ module MyCore (
     );
 
     decode Decode(
-        .instr(instrD), .pc(pcD),
+        .instr(instrD), .pc(pcD), 
+        .AddrError(AddErrorD),
         .vs(vsHD), .vt(vtHD),
-        .j(jD),
+        .j(jD), .cp_read(cp_readD), .cp_write(cp_writeD),
+        .error(errorD),
         .controlD(controlD),
         .rsD(rsD), .rtD(rtD), .rdD(rdD), .shamtD(shamtD),
         .immD(immD)
@@ -52,35 +60,38 @@ module MyCore (
 
     logic [4:0] rde, rdE, shamte, rse, rte;
     logic [31:0] aluoutE, vtE, imme, vse, vte;
-    logic [31:0] hiE, loE, hie, loe;
+    logic [31:0] hiE, loE, hie, loe, BadVaddrE;
     logic [15:0] controlE;
+    logic [6:0] errorE, errore;
+    logic cp_readE, cp_writeE, inslotE;
     execute Execute(
         .control(controlE[7:2]),
         .rd(rde), .shamt(shamte),
+        .error(errore),
         .vs(vsHe), .vt(vtHe), .imm(imme),
         .hie(hiHe), .loe(loHe),
-        .rdE(rdE), .outE(aluoutE), 
-        .vtE(vtE), .hiE(hiE), .loE(loE)
+        .rdE(rdE), .errorE(errorE),
+        .outE(aluoutE), .vtE(vtE), .hiE(hiE), .loE(loE)
     );
 
     logic [31:0] dataoutM, aluoutM, aluoutm, vtm;
-    logic [31:0] hiM, him, loM, lom;
+    logic [31:0] hiM, loM, BadVaddrM;
     logic [4:0] rdM, rdm;
     logic [15:0] controlM;
+    logic [6:0] errorm;
+    logic cp_readM, cp_writeM, inslotM;
     memory Memory(
         .control(controlM),
         .rdE(rdm),
         .WriteData(vtm), .addr(aluoutm),
-        .him(him), .lom(lom),
         .resp(dresp), .req(dreq),
         .rdM(rdM),
         .ReadData(dataoutM), .ALUoutM(aluoutM),
-        .hiM(hiM), .loM(loM)
     );
 
     logic [31:0] aluoutw, dataoutw;
     logic [31:0] hiw, low, hiW, loW;
-    logic hi_writeW, lo_writeW;
+    logic hi_writeW, lo_writeW, cp_writeW;
     logic [4:0] rdw;
     logic [31:0] vW /* verilator public_flat_rd */;
     logic [4:0] rdW /* verilator public_flat_rd */;
@@ -90,7 +101,8 @@ module MyCore (
         .control(controlW),
         .rdM(rdw),
         .ReadDataM(dataoutw), .ALUoutM(aluoutw),
-        .hiw(hiw), .low(low),
+        .hiw(hiw), .low(low), .cpw(cpw),
+        .cp_writeW(cp_writeW), .cp_readW(cp_readW),
         .write_enable(write_enableW),
         .hi_writeW(hi_writeW), .lo_writeW(lo_writeW),
         .rdW(rdW),
@@ -120,11 +132,14 @@ module MyCore (
 
     always_ff @(posedge clk) begin
         if (~resetn) begin
-            {controlE, controlM, controlW} <= 48'b0;
-            {vse, vte, imme, vtm, aluoutm, aluoutw, dataoutw} <= 224'b0;
-            {hiw, low, him, hiw} <= 128'b0;
-            {rde, rse, rte, shamte, rdm, rdw} <= 30'b0;
-            instrD <= 32'b0;
+            {controlE, controlM, controlW} <= '0;
+            {vse, vte, imme, vtm, aluoutm, aluoutw, dataoutw} <= '0;
+            {errore, cp_readE, cp_writeE} <= '0;
+            {cp_readM, cp_writeM} <= '0;
+            {hiw, low, hiM, loM} <= '0;
+            {rde, rse, rte, shamte, rdm, rdw} <= '0;
+            instrD <= '0;
+            {BadVaddrD, AddrErrorD, inslotD} <= '0;
         end 
         else begin
             if(~stallM) begin
@@ -137,17 +152,23 @@ module MyCore (
                 low <= loM;
 
                 controlM <= controlE;
+                cp_writeM <= cp_writeE;
+                cp_readM <= cp_writeM;
+                BadVaddrM <= BadVaddrE;
+                inslotM <= inslotE;
                 pcM <= pcE;
                 rdm <= rdE;
                 vtm <= vtE;
-                him <= hiE;
-                lom <= loE;
+                hiM <= hiE;
+                loM <= loE;
                 aluoutm <= aluoutE;
             end
             if(stall) begin
-                controlE <= 16'b0;
-                {vse, vte, imme, hie, loe} <= 160'b0;
-                {rde, rse, rte, shamte} <= 20'b0;
+                controlE <= '0;
+                {vse, vte, imme, hie, loe} <= '0;
+                {rde, rse, rte, shamte} <= '0;
+                {cp_readE, cp_writeE, errore} <= '0;
+                {BadVaddrE, inslotE} <= '0;
             end
             else begin
                 controlE <= controlD;
@@ -161,9 +182,17 @@ module MyCore (
                 loe <= loD;
                 imme <= immD;
                 shamte <= shamtD;
+                errore <= errorE;
+                inslotE <= inslotD:
+                BadVaddrE <= BadVaddrD;
+                cp_readE <= cp_readD;
+                cp_writeE <= cp_writeD;
 
                 pcD <= pcF;
                 instrD <= instrF;
+                inslotD <= inslotF;
+                BadVaddrD <= BadVaddrF;
+                AddrErrorD <= AddrErrorF;
             end
         end
     end

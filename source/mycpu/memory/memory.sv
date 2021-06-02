@@ -4,12 +4,10 @@ module memory(
     input logic [15:0] control,
     input logic [4:0] rdE,
     input logic [31:0] WriteData, addr,
-    input logic [31:0] him, lom,
     input  dbus_resp_t resp,
     output dbus_req_t  req,
     output logic [4:0] rdM,
     output logic [31:0] ReadData, ALUoutM,
-    output logic [31:0] hiM, loM
 );
     //strobe_type: 00:wholeword  01:halfword  10:byte
     logic mem_write, memtoreg, mem_extend;
@@ -48,8 +46,6 @@ module memory(
 
     assign ALUoutM = addr;
     assign rdM = rdE;
-    assign loM = lom;
-    assign hiM = him;
 
     logic _unused_ok = &{resp, control};
 

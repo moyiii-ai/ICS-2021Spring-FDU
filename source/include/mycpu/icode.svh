@@ -3,7 +3,9 @@
 
 `define RTYPE 6'b000000
 `define ADDU 6'b100001
+`define ADD 6'b100000 
 `define SUBU 6'b100011
+`define SUB 6'b100010 
 `define AND 6'b100100
 `define OR 6'b100101
 `define NOR 6'b100111
@@ -25,8 +27,11 @@
 `define SLLV 6'b000100 
 `define SRAV 6'b000111 
 `define SRLV 6'b000110 
+`define BREAK 6'b001101 
+`define SYSCALL 6'b001100
 
 `define ADDIU 6'b001001
+`define ADDI 6'b001000 
 `define ANDI 6'b001100
 `define ORI 6'b001101
 `define XORI 6'b001110
@@ -45,7 +50,12 @@
 `define LH 6'b100001 
 `define LHU 6'b100101
 `define SB 6'b101000 
-`define SH 6'b101001 
+`define SH 6'b101001
+`define CPC0 6'b010000 
+
+`define MF 5'b00000 
+`define MT 5'b00100
+`define ERET 6'b011000 
 
 `define BGEZ 5'b00001 
 `define BGEZAL 5'b10001 

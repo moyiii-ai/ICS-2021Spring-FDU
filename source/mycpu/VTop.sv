@@ -25,6 +25,7 @@ module VTop (
 
     MyCore core(
         .clk(clk), .resetn(resetn),
+        .ext_int(ext_int),
         .ireq(myireq), .iresp(myiresp),
         .dreq(mydreq), .dresp(mydresp)
     );

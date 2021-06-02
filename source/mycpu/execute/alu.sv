@@ -3,7 +3,8 @@
 module alu (
     input logic [3:0] funct,
     input logic [31:0] in1, in2,
-    output logic [31:0] out
+    output logic [31:0] out,
+    output logic over
 );
     always_comb begin
         case(funct)
@@ -24,4 +25,10 @@ module alu (
             default: out = 32'b0;
         endcase
     end
+    
+    logic [32:0] temp1, temp2, temp;
+    assign temp1 = {in1[31], in1};
+    assign temp2 = {in2[31], in2};
+    assign temp = (funct == 4'b0000) ? temp1 + temp2 : temp1 - temp2;
+    assign over = (temp[32] != temp[31]);
 endmodule
