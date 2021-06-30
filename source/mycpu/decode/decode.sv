@@ -3,10 +3,10 @@
 
 module decode (
     input logic [31:0] instr, pc,
-    input logic AddrError, 
+    input logic AddrError, Insolt, 
     input logic [31:0] vs, vt,
-    output logic j, cp_read, cp_write,
-    output logic [6:0] error,
+    output logic j,
+    output logic [11:0] error,
     output logic [15:0] controlD,
     output logic [4:0] rsD, rtD, rdD, shamtD,
     output logic [31:0] immD
@@ -27,13 +27,16 @@ module decode (
     assign rsD = instr[25:21];
     assign rtD = instr[20:16];
 
-    assign cp_read = (op == `CPC0) & (rsD == `MF);
-    assign cp_write = (op == `CPC0) & (rsD == `MT);
+    assign error[9] = Insolt;
+    assign error[10] = (op == `CPC0) & (rsD == `MF);
+    assign error[11] = (op == `CPC0) & (rsD == `MT);
 
-    assign error[6] = (op == `CPC0) & (instr[5:0] == `ERET);
-    assign error[5] = ((op == `RTYPE) & ((funct == `ADD) | (funct == `SUB))) | (op == `ADDI);
+    assign error[8] = ((op == `RTYPE) & ((funct == `ADD) | (funct == `SUB))) | (op == `ADDI);
+    assign error[7] = 0;
+    assign error[6] = AddrError;
+    assign error[5] = 0;
     assign error[4] = 0;
-    assign error[3] = AddrError;
+    assign error[3] = (op == `CPC0) & (instr[5:0] == `ERET);
     assign error[2] = ((op == `RTYPE) & (funct == `BREAK));
     assign error[1] = ((op == `RTYPE) & (funct == `SYSCALL)); 
  

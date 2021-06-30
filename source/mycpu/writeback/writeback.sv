@@ -5,7 +5,7 @@ module writeback(
     input logic [4:0] rdM,
     input logic [31:0] ReadDataM, ALUoutM,
     input logic [31:0] hiw, low, cpw,
-    input logic cp_writeW, cp_readW,
+    input logic cp_read,
     output logic write_enable,
     output logic hi_writeW, lo_writeW,
     output logic [4:0] rdW,
@@ -29,6 +29,8 @@ module writeback(
             ResultW = hiw;
         else if(lo_read)
             ResultW = low;
+        else if(cp_read)
+            ResultW = cpw;
         else
             ResultW = ALUoutM;
     end

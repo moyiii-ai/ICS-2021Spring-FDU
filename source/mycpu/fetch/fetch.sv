@@ -61,6 +61,10 @@ module fetch (
             pcF <= 32'hbfc0_0000;
             tempc <= 32'hbfc0_0000;
         end
+        else if(flush) begin
+            pcF <= pcN;
+            tempc <= pcN;
+        end
         else if(~stall) begin
             pcF <= pcc;
             tempc <= pcc;

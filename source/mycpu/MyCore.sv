@@ -9,7 +9,7 @@ module MyCore (
     output dbus_req_t  dreq,
     input  dbus_resp_t dresp
 );
-    logic [31:0] pcD, pcE, pcM, pcF, instrF;
+    logic [31:0] pcD, pcE, pcM, pcF, instrF, pcN;
     logic [31:0] pcW /* verilator public_flat_rd */;
     logic [31:0] BadVaddrF;
     logic AddrErrorF, inslotF;
@@ -27,8 +27,8 @@ module MyCore (
     logic [31:0] vsD, vtD, immD;
     logic [31:0] instrD, BadVaddrD;
     logic [4:0] rsD, rtD, rdD, shamtD;
-    logic jD, cp_readD, cp_writeD, AddrErrorD, inslotD;
-    logic [6:0] errorD;
+    logic jD, AddrErrord, Insoltd;
+    logic [11:0] errorD;
     logic [15:0] controlD;
     regfile Regfile(
         .clk(clk),
@@ -38,7 +38,7 @@ module MyCore (
         .rd1(vsD), .rd2(vtD)
     );
 
-    logic [31:0] hiD, loD;
+    logic [31:0] hiD, loD, cpD;
     hilo Hilo(
         .clk(clk),
         .hi_data(hiW), .lo_data(loW),
@@ -47,11 +47,24 @@ module MyCore (
         .hi(hiD), .lo(loD)
     );
 
+    cp0 Cp0(
+        .clk(clk), .resetn(resetn),
+        .ext_int(ext_int),
+        .ra(rdD), .wa(rdW),
+        .error(errorM),
+        .BadVaddr(BadVaddrM),
+        .cp_wdata(cp_wdataM),
+        .pcM(pcM), .pcN(pcN),
+        .flush(flush),
+        .cp_rdata(cpD)
+    );
+
     decode Decode(
         .instr(instrD), .pc(pcD), 
-        .AddrError(AddErrorD),
+        .AddrError(AddrErrord),
+        .Insolt(Insoltd),
         .vs(vsHD), .vt(vtHD),
-        .j(jD), .cp_read(cp_readD), .cp_write(cp_writeD),
+        .j(jD),
         .error(errorD),
         .controlD(controlD),
         .rsD(rsD), .rtD(rtD), .rdD(rdD), .shamtD(shamtD),
@@ -60,10 +73,10 @@ module MyCore (
 
     logic [4:0] rde, rdE, shamte, rse, rte;
     logic [31:0] aluoutE, vtE, imme, vse, vte;
-    logic [31:0] hiE, loE, hie, loe, BadVaddrE;
+    logic [31:0] hiE, loE, hie, loe, cpe, BadVaddrE;
     logic [15:0] controlE;
-    logic [6:0] errorE, errore;
-    logic cp_readE, cp_writeE, inslotE;
+    logic [11:0] errorE, errore;
+
     execute Execute(
         .control(controlE[7:2]),
         .rd(rde), .shamt(shamte),
@@ -75,11 +88,10 @@ module MyCore (
     );
 
     logic [31:0] dataoutM, aluoutM, aluoutm, vtm;
-    logic [31:0] hiM, loM, BadVaddrM;
+    logic [31:0] hiM, loM, BadVaddrm, BadVaddrM,;
     logic [4:0] rdM, rdm;
     logic [15:0] controlM;
-    logic [6:0] errorm;
-    logic cp_readM, cp_writeM, inslotM;
+    logic [11:0] errorm, errorM;
     memory Memory(
         .control(controlM),
         .rdE(rdm),
@@ -91,7 +103,7 @@ module MyCore (
 
     logic [31:0] aluoutw, dataoutw;
     logic [31:0] hiw, low, hiW, loW;
-    logic hi_writeW, lo_writeW, cp_writeW;
+    logic hi_writeW, lo_writeW;
     logic [4:0] rdw;
     logic [31:0] vW /* verilator public_flat_rd */;
     logic [4:0] rdW /* verilator public_flat_rd */;
@@ -99,17 +111,17 @@ module MyCore (
     logic [15:0] controlW;
     writeback WriteBack(
         .control(controlW),
-        .rdM(rdw),
+        .rdM(rdw), .cp_read(cp_readw),
         .ReadDataM(dataoutw), .ALUoutM(aluoutw),
         .hiw(hiw), .low(low), .cpw(cpw),
-        .cp_writeW(cp_writeW), .cp_readW(cp_readW),
+        .cp_read(cp_readw),
         .write_enable(write_enableW),
         .hi_writeW(hi_writeW), .lo_writeW(lo_writeW),
         .rdW(rdW),
         .ResultW(vW), .hiW(hiW), .loW(loW)
     );
 
-    logic [31:0] vsHD, vtHD, vsHe, vtHe, hiHe, loHe;
+    logic [31:0] vsHD, vtHD, vsHe, vtHe, hiHe, loHe, cpHe;
     logic stall, stallM;
     hazard Hazard(
         .ireq(ireq), .iresp(iresp),
@@ -134,65 +146,69 @@ module MyCore (
         if (~resetn) begin
             {controlE, controlM, controlW} <= '0;
             {vse, vte, imme, vtm, aluoutm, aluoutw, dataoutw} <= '0;
-            {errore, cp_readE, cp_writeE} <= '0;
-            {cp_readM, cp_writeM} <= '0;
+            {errore, errorm, cp_readw} <= '0;
             {hiw, low, hiM, loM} <= '0;
             {rde, rse, rte, shamte, rdm, rdw} <= '0;
-            instrD <= '0;
-            {BadVaddrD, AddrErrorD, inslotD} <= '0;
+            {BadVaddrD, instrD} <= '0;
         end 
         else begin
-            if(~stallM) begin
-                controlW <= controlM;
-                pcW <= pcM;
-                rdw <= rdM;
-                aluoutw <= aluoutM;
-                dataoutw <= dataoutM;
-                hiw <= hiM;
-                low <= loM;
+            if(flush) begin
+                {controlE, controlM, controlW} <= '0;
+                {vse, vte, imme, vtm, aluoutm, aluoutw, dataoutw} <= '0;
+                {errore, errorm, cp_readw} <= '0;
+                {hiw, low, hiM, loM} <= '0;
+                {rde, rse, rte, shamte, rdm, rdw} <= '0;
+                instrD <= '0;
+                {BadVaddrd, AddrErrord} <= '0;
+            end else begin
+                if(~stallM) begin
+                    controlW <= controlM;
+                    pcW <= pcM;
+                    rdw <= rdM;
+                    aluoutw <= aluoutM;
+                    dataoutw <= dataoutM;
+                    hiw <= hiM;
+                    low <= loM;
+                    cp_readw <= errorM[10];
 
-                controlM <= controlE;
-                cp_writeM <= cp_writeE;
-                cp_readM <= cp_writeM;
-                BadVaddrM <= BadVaddrE;
-                inslotM <= inslotE;
-                pcM <= pcE;
-                rdm <= rdE;
-                vtm <= vtE;
-                hiM <= hiE;
-                loM <= loE;
-                aluoutm <= aluoutE;
-            end
-            if(stall) begin
-                controlE <= '0;
-                {vse, vte, imme, hie, loe} <= '0;
-                {rde, rse, rte, shamte} <= '0;
-                {cp_readE, cp_writeE, errore} <= '0;
-                {BadVaddrE, inslotE} <= '0;
-            end
-            else begin
-                controlE <= controlD;
-                pcE <= pcD;
-                rde <= rdD;
-                rse <= rsD;
-                rte <= rtD;
-                vse <= vsD;
-                vte <= vtD;
-                hie <= hiD;
-                loe <= loD;
-                imme <= immD;
-                shamte <= shamtD;
-                errore <= errorE;
-                inslotE <= inslotD:
-                BadVaddrE <= BadVaddrD;
-                cp_readE <= cp_readD;
-                cp_writeE <= cp_writeD;
+                    controlM <= controlE;
+                    BadVaddrm <= BadVaddrE;
+                    pcM <= pcE;
+                    rdm <= rdE;
+                    vtm <= vtE;
+                    errorm <= errorE;
+                    hiM <= hiE;
+                    loM <= loE;
+                    aluoutm <= aluoutE;
+                end
+                if(stall) begin
+                    controlE <= '0;
+                    {vse, vte, imme, hie, loe} <= '0;
+                    {rde, rse, rte, shamte} <= '0;
+                    {errore} <= '0;
+                    {BadVaddrE} <= '0;
+                end
+                else begin
+                    controlE <= controlD;
+                    pcE <= pcD;
+                    rde <= rdD;
+                    rse <= rsD;
+                    rte <= rtD;
+                    vse <= vsD;
+                    vte <= vtD;
+                    hie <= hiD;
+                    loe <= loD;
+                    imme <= immD;
+                    shamte <= shamtD;
+                    errore <= errorD;
+                    BadVaddrE <= BadVaddrD;
 
-                pcD <= pcF;
-                instrD <= instrF;
-                inslotD <= inslotF;
-                BadVaddrD <= BadVaddrF;
-                AddrErrorD <= AddrErrorF;
+                    pcD <= pcF;
+                    instrD <= instrF;
+                    inslotd <= inslotF;
+                    BadVaddrD <= BadVaddrF;
+                    AddrErrord <= AddrErrorF;
+                end
             end
         end
     end
