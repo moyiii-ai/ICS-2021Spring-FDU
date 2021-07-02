@@ -5,15 +5,15 @@ module cp0(
     input logic [5:0] ext_int,
     input logic [4:0] ra, wa,
     input logic [11:0] error,
-    input logic [31:0] BadVAddr, cp_wdata, pcM, pcN,
+    input logic [31:0] BadVaddr, cp_wdata, pcM,
     output logic flush,
-    output logic [31:0] cp_rdata
+    output logic [31:0] cp_rdata, pcN
 );
-    word_t [31:0] cp0, cp0_pre;
+    word_t [14:8] cp0, cp0_pre;
     logic time_count, comp_valid;
 
     word_t [31:0] mask12, mask13;
-    alwasy_comb begin
+    always_comb begin
         assign mask12 = 32'b0;
         mask12[15:8] = 8'hff;
         mask12[1] = 1;
@@ -29,7 +29,9 @@ module cp0(
 
     always_ff @(posedge clk) begin
         if(~resetn) begin
-            cp0_pre <= '0;
+            cp0_pre[11:8] <= '0;
+            cp0_pre[14:13] <= '0;
+            cp0_pre[12] <= 32'h00400000;
             time_count <= 0;
             comp_valid <= 0;
             time_int <= '0;
@@ -45,7 +47,7 @@ module cp0(
                     time_int <= {1'b1, 7'b0};
             end 
             else begin 
-                if(cp0[9] == cp[11] & comp_valid)
+                if(cp0[9] == cp0[11] & comp_valid)
                     time_int <= {1'b1, 7'b0};
                 else
                     time_int <= '0;
@@ -80,6 +82,7 @@ module cp0(
         else if(error[6]) begin
             flush = 1;
             cp0[13][6:2] = 5'b00100;
+            cp0[8] = BadVaddr;
         end
         else if(error[0]) begin
             flush = 1;
@@ -100,14 +103,17 @@ module cp0(
         else if(error[5]) begin
             flush = 1;
             cp0[13][6:2] = 5'b00100;
+            cp0[8] = BadVaddr;
         end 
         else if(error[4]) begin
             flush = 1;
             cp0[13][6:2] = 5'b00101;
+            cp0[8] = BadVaddr;
         end 
         else if(error[3]) begin
             flush = 1;
             pcN = cp0[14];
+            cp0[12][1] = 0;
         end
 
         if(flush & (cp0[13][1] == 0)) begin
@@ -119,6 +125,7 @@ module cp0(
                 cp0[14] = pcM;
                 cp0[13][31] = 0;
             end
+            cp0[12][1] = 1;
         end 
     end
     assign cp_rdata = cp0[ra];

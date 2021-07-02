@@ -2,11 +2,12 @@
 `include "mycpu/icode.svh"
 
 module fetch (
-    input logic [31:0] pc, instr, vs,
-    input logic j, clk, stall, resetn,
+    input logic [31:0] pc, pcN, instr, vs,
+    input logic j, clk, resetn,
+    input logic flush, stall,
     input  ibus_resp_t iresp,
     output ibus_req_t  ireq,
-    output logic inslot, AddrError,
+    output logic insolt, AddrError,
     output logic [31:0] pcF, instrF, BadVaddr
 );
     //pcc: selectpc  pcF: Fetch  pc:decode
@@ -32,9 +33,10 @@ module fetch (
         insolt = 0;
         case(op)
             `RTYPE:
-                if((funct == `JR) | (funct == `JALR))
+                if((funct == `JR) | (funct == `JALR)) begin
                     pcc = vs;
                     insolt = 1;
+                end
                 else
                     pcc = pcplusF;
             `J: begin
@@ -75,7 +77,7 @@ module fetch (
     end
 
     always_comb begin
-        if((tempc[1:0] & 3) != 2'b00) begin
+        if(tempc[1:0] != 2'b00) begin
             ireq.valid = 0;
             ireq.addr = 32'b0;
             AddrError = 1;

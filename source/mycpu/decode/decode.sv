@@ -8,7 +8,7 @@ module decode (
     output logic j,
     output logic [11:0] error,
     output logic [15:0] controlD,
-    output logic [4:0] rsD, rtD, rdD, shamtD,
+    output logic [4:0] rsD, rtD, rdD, rd0D, shamtD,
     output logic [31:0] immD
 
 );
@@ -103,18 +103,23 @@ module decode (
                 `SB:    control = 21'b1_00_00_0_0000_10_0_0_1_0000_0_1;
                 `J:     control = 21'b0_00_00_0_0000_00_0_0_0_0000_0_0;
                 `JAL:   control = 21'b0_11_11_1_0000_00_0_0_1_1111_0_0;
+                `BEQ:   control = 21'b0;
+                `BNE:   control = 21'b0;
+                `BGTZ:  control = 21'b0;
+                `BLEZ:  control = 21'b0;
                 `REGIMM: begin
                     if((rtD == `BLTZAL) | (rtD == `BGEZAL))
                         control = 21'b0_11_11_1_0000_00_0_0_1_1111_0_0;
                     else begin
                         control = 21'b0;
-                        error[0] = 1;
+                        if(rtD != `BLTZ & rtD != `BGEZ)
+                            error[0] = 1;
                     end
                 end
                 `CPC0: begin
                     if(rsD == `MT)
-                        control = 21'b0;
-                    else if(rsd == `MF)
+                        control = 21'b0_00_01_0_0000_00_0_0_0_1111_0_0;
+                    else if(rsD == `MF)
                         control = 21'b0_00_10_1_0000_00_0_0_0_0000_0_0;
                     else if((instr[25] == 1) & (instr[5:0] == `ERET))
                         control = 21'b0;
@@ -132,8 +137,7 @@ module decode (
     end
 
     logic [15:0] st_imm;
-    logic [4:0] rd;
-    assign rd = instr[15:11];
+    assign rd0D = instr[15:11];
     assign st_imm = instr[15:0];
 
     logic [4:0] shamt;
@@ -158,7 +162,7 @@ module decode (
     always_comb begin
         case(reg_dst)
             2'b00: rdD = 0;
-            2'b01: rdD = rd;
+            2'b01: rdD = rd0D;
             2'b10: rdD = rtD;
             2'b11: rdD = 31;
             default: rdD = 0;

@@ -1,12 +1,15 @@
 module hilo (
-    input logic clk,
+    input logic clk, resetn,
     input logic[31:0] hi_data, lo_data,
     input logic hi_write, lo_write,
     output logic[31:0] hi, lo
 );
     i32 hi_new, lo_new, hi_save, lo_save;
     always_ff @(posedge clk) begin
-        {hi_save, lo_save} <= {hi_new, lo_new};
+        if(~resetn)
+            {hi_save, lo_save} <= '0;
+        else
+            {hi_save, lo_save} <= {hi_new, lo_new};
     end
     always_comb begin
         {hi_new, lo_new} = {hi_save, lo_save};
