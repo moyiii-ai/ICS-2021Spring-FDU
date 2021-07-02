@@ -66,6 +66,6 @@ module memory(
     assign ALUoutM = addr;
     assign rdM = rdE;
 
-    logic _unused_ok = &{resp, control};
+    logic _unused_ok = &{resp, control, errorm};
 
 endmodule

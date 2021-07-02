@@ -31,4 +31,7 @@ module alu (
     assign temp2 = {in2[31], in2};
     assign temp = (funct == 4'b0000) ? temp1 + temp2 : temp1 - temp2;
     assign over = (temp[32] != temp[31]);
+
+    logic _unused_ok = &{temp};
+
 endmodule

@@ -63,6 +63,6 @@ module execute (
             outE = cpe;
     end
 
-    logic _unused_ok = &{error};
+    logic _unused_ok = &{error, control};
 
 endmodule

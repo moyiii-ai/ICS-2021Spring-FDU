@@ -12,7 +12,7 @@ module MyCore (
     logic [31:0] pcD, pcE, pcM, pcF, instrF, pcN;
     logic [31:0] pcW /* verilator public_flat_rd */;
     logic [31:0] BadVaddrF;
-    logic AddrErrorF, InsoltF;
+    logic AddrErrorF, InsoltF, flush;
 
     fetch Fetch(
         .pc(pcD), .pcN(pcN), .instr(instrD), .vs(vsHD),
@@ -55,7 +55,7 @@ module MyCore (
         .ra(rd0e), .wa(rdM),
         .error(errorM),
         .BadVaddr(BadVaddrM),
-        .cp_wdata(cp_wdataM),
+        .cp_wdata(aluoutM),
         .pcM(pcM),
         .flush(flush),
         .cp_rdata(cpe), .pcN(pcN)
@@ -149,7 +149,7 @@ module MyCore (
         if (~resetn) begin
             {controlE, controlM, controlW} <= '0;
             {vse, vte, imme, vtm, aluoutm, aluoutw, dataoutw} <= '0;
-            {errore, errorm, cpe, cpm} <= '0;
+            {errore, errorm, cpm} <= '0;
             {hiw, low, hiM, loM} <= '0;
             {rde, rse, rte, rd0e, shamte, rdm, rdw} <= '0;
             {BadVaddrD, instrD} <= '0;
@@ -158,7 +158,7 @@ module MyCore (
             if(flush) begin
                 {controlE, controlM, controlW} <= '0;
                 {vse, vte, imme, vtm, aluoutm, aluoutw, dataoutw} <= '0;
-                {errore, errorm, cpe, cpm} <= '0;
+                {errore, errorm, cpm} <= '0;
                 {hiw, low, hiM, loM} <= '0;
                 {rde, rse, rte, rd0e, shamte, rdm, rdw} <= '0;
                 instrD <= '0;
@@ -187,8 +187,8 @@ module MyCore (
                 if(stall) begin
                     controlE <= '0;
                     {vse, vte, imme, hie, loe} <= '0;
-                    {rde, rse, rte, shamte, cpe} <= '0;
-                    {errore, cpe, rd0e} <= '0;
+                    {rde, rse, rte, shamte} <= '0;
+                    {errore, rd0e} <= '0;
                     {BadVaddrE} <= '0;
                 end
                 else begin

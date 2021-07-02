@@ -12,9 +12,9 @@ module cp0(
     word_t [14:8] cp0, cp0_pre;
     logic time_count, comp_valid;
 
-    word_t [31:0] mask12, mask13;
+    logic [31:0] mask12, mask13;
     always_comb begin
-        assign mask12 = 32'b0;
+        mask12 = 32'b0;
         mask12[15:8] = 8'hff;
         mask12[1] = 1;
         mask12[0] = 1;
@@ -40,7 +40,7 @@ module cp0(
             cp0_pre <= cp0;
             time_count <= ~time_count;
             comp_valid <= comp_valid | (wa == 5'b01011);
-            if(time_int[8] == 1) begin
+            if(time_int[7] == 1) begin
                 if(wa == 5'b01011)
                     time_int <= '0;
                 else 
@@ -61,7 +61,8 @@ module cp0(
         cp0 = cp0_pre;
         flush = 0;
         pcN = 32'hbfc00380;
-        cp0[9] = cp0[9] + (time_count == 1); 
+        if(time_count == 1)
+            cp0[9] = cp0_pre[9] + 1;
         if(error[11]) begin
             if(wa == 5'b01001)
                 cp0[9] = cp_wdata;
@@ -129,6 +130,8 @@ module cp0(
         end 
     end
     assign cp_rdata = cp0[ra];
+    
+    logic _unused_ok = &{error};
 endmodule
 
 /*
