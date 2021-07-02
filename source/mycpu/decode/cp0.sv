@@ -9,7 +9,7 @@ module cp0(
     output logic flush,
     output logic [31:0] cp_rdata, pcN
 );
-    word_t [14:8] cp0, cp0_pre;/* verilator split_var */;
+    word_t [14:8] cp0, cp0_pre /* verilator split_var */;
     logic time_count, comp_valid;
 
     logic [31:0] mask12, mask13;
