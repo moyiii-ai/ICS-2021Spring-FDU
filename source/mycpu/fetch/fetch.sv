@@ -85,7 +85,7 @@ module fetch (
 
     logic Db, Dj;
 
-    assign Db = op == `BEQ | op == `BNE | op == `BGTZ | op == `BLEZ | op == `BGEZ | op == `REGIMM;
+    assign Db = op == `BEQ | op == `BNE | op == `BGTZ | op == `BLEZ | op == `REGIMM;
     assign Dj = op == `JAL | op == `J | (op == `RTYPE & (funct == `JR | funct == `JALR));
 
     assign insolt = Db | Dj;
