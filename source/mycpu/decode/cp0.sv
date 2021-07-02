@@ -9,7 +9,7 @@ module cp0(
     output logic flush,
     output logic [31:0] cp_rdata, pcN
 );
-    word_t [14:8] cp0, cp0_pre;
+    word_t [14:8] cp0, cp0_pre;/* verilator split_var */;
     logic time_count, comp_valid;
 
     logic [31:0] mask12, mask13;
@@ -47,7 +47,7 @@ module cp0(
                     time_int <= {1'b1, 7'b0};
             end 
             else begin 
-                if(cp0[9] == cp0[11] & comp_valid)
+                if(cp0_pre[9] == cp0_pre[11] & comp_valid)
                     time_int <= {1'b1, 7'b0};
                 else
                     time_int <= '0;
@@ -55,7 +55,7 @@ module cp0(
         end
     end
 
-    assign int_info = {{ext_int, 2'b00} | cp0[13][15:8] | time_int} & cp0[12][15:8];
+    assign int_info = {{ext_int, 2'b00} | cp0_pre[13][15:8] | time_int} & cp0_pre[12][15:8];
 
     always_comb begin
         cp0 = cp0_pre;
@@ -76,7 +76,7 @@ module cp0(
                 cp0[14] = cp_wdata;
         end
 
-        if(cp0[12][0] == 1 & cp0[12][1] == 0 & int_info != 8'h00) begin
+        if(cp0_pre[12][0] == 1 & cp0_pre[12][1] == 0 & int_info != 8'h00) begin
             flush = 1;
             cp0[13][6:2] = 5'b00000;
         end 
@@ -117,16 +117,18 @@ module cp0(
             cp0[12][1] = 0;
         end
 
-        if(flush & (cp0[13][1] == 0)) begin
-            if(error[8]) begin
-                cp0[14] = pcM - 4;
-                cp0[13][31] = 1;
-            end
-            else begin  
-                cp0[14] = pcM;
-                cp0[13][31] = 0;
-            end
+        if(flush) begin
             cp0[12][1] = 1;
+            if(cp0_pre[13][1] == 0) begin
+                if(error[9]) begin
+                    cp0[14] = pcM - 4;
+                    cp0[13][31] = 1;
+                end
+                else begin  
+                    cp0[14] = pcM;
+                    cp0[13][31] = 0;
+                end
+            end
         end 
     end
     assign cp_rdata = cp0[ra];

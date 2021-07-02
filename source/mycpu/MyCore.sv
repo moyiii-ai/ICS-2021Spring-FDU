@@ -26,7 +26,7 @@ module MyCore (
     );
 
     logic [31:0] vsD, vtD, immD;
-    logic [31:0] instrD, BadVaddrD, BadVaddrd;
+    logic [31:0] instrD, BadVaddrD;
     logic [4:0] rsD, rtD, rdD, shamtD, rd0D;
     logic jD, AddrErrord, Insoltd;
     logic [11:0] errorD;
@@ -48,7 +48,7 @@ module MyCore (
         .hi(hiD), .lo(loD)
     );
 
-    logic [31:0] cpe, cpm;
+    logic [31:0] cpe;
     cp0 Cp0(
         .clk(clk), .resetn(resetn),
         .ext_int(ext_int),
@@ -149,7 +149,7 @@ module MyCore (
         if (~resetn) begin
             {controlE, controlM, controlW} <= '0;
             {vse, vte, imme, vtm, aluoutm, aluoutw, dataoutw} <= '0;
-            {errore, errorm, cpm} <= '0;
+            {errore, errorm} <= '0;
             {hiw, low, hiM, loM} <= '0;
             {rde, rse, rte, rd0e, shamte, rdm, rdw} <= '0;
             {BadVaddrD, instrD} <= '0;
@@ -158,11 +158,10 @@ module MyCore (
             if(flush) begin
                 {controlE, controlM, controlW} <= '0;
                 {vse, vte, imme, vtm, aluoutm, aluoutw, dataoutw} <= '0;
-                {errore, errorm, cpm} <= '0;
+                {errore, errorm} <= '0;
                 {hiw, low, hiM, loM} <= '0;
                 {rde, rse, rte, rd0e, shamte, rdm, rdw} <= '0;
-                instrD <= '0;
-                {BadVaddrd, AddrErrord} <= '0;
+                {instrD, AddrErrord} <= '0;
             end else begin
                 if(~stallM) begin
                     controlW <= controlM;
@@ -178,7 +177,6 @@ module MyCore (
                     pcM <= pcE;
                     rdm <= rdE;
                     vtm <= vtE;
-                    cpm <= cpe;
                     errorm <= errorE;
                     hiM <= hiE;
                     loM <= loE;

@@ -28,30 +28,21 @@ module fetch (
     logic [5:0] op, funct;
     assign op = instr[31:26];
     assign funct = instr[5:0];
-
+    
     always_comb begin
-        insolt = 0;
         case(op)
             `RTYPE:
-                if((funct == `JR) | (funct == `JALR)) begin
+                if((funct == `JR) | (funct == `JALR))
                     pcc = vs;
-                    insolt = 1;
-                end
                 else
                     pcc = pcplusF;
-            `J: begin
+            `J: 
                 pcc = jpc;
-                insolt = 1;
-            end
-            `JAL: begin
+            `JAL:
                 pcc = jpc;
-                insolt = 1;
-            end
             default:
-                if(j) begin
+                if(j)
                     pcc = bpc;
-                    insolt = 1;
-                end
                 else
                     pcc = pcplusF;
         endcase
@@ -91,6 +82,13 @@ module fetch (
     end
 
     assign instrF = iresp.data;
+
+    logic Db, Dj;
+
+    assign Db = op == `BEQ | op == `BNE | op == `BGTZ | op == `BLEZ | op == `BGEZ | op == `REGIMM;
+    assign Dj = op == `JAL | op == `J | (op == `RTYPE & (funct == `JR | funct == `JALR));
+
+    assign insolt = Db | Dj;
 
     logic _unused_ok = &{iresp};
     
