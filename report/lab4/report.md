@@ -36,7 +36,7 @@ I-type = op(6) + rs(5) + rt(5) + imm(16) /
 
 ### 信号维护
 
-1. 使用`cp0`模块维护`cp0`寄存器，类似寄存器文件，在E阶段读，M阶段写，接入的error信号和M阶段保持一致。
+1. 使用`cp0`模块维护`cp0`寄存器，类似寄存器文件，在E阶段读，M阶段写，接入的error信号和M阶段保持一致。根据输入的cp0决定新的cp0，并在每个时钟上升沿更新。
 2. 将`VTop`中的`ext_int`信号接入`MyCore`，在`cp0`模块使用。
 3. 设置一个12位`error`信号在流水段之间传递，表示异常相关信号，分别为`CpWrite`、`CpRead`、`Insolt`、`CheckOver`、`OverError`、`AddrErrorI`、`AddrErrorL`、`AddrErrorS`、`InsEret`、`InsBreak`、`InsSyscall`、`InsExcept`。实际上功能与控制信号类似，但是为了减少对代码的改动不再调整`control`信号。
 4. `CpRead`、`CpWrite`分别表示是否读写`cp0`寄存器，从D阶段生成，在W和M阶段使用。
@@ -76,6 +76,7 @@ I-type = op(6) + rs(5) + rt(5) + imm(16) /
 
 1. 加减法溢出时，结果转发的逻辑可保持不变：在M阶段溢出异常就被处理，之后用到转发结果的指令一定会被冲刷，不产生影响。
 2. 关于`cp0`的转发：在M阶段修改寄存器，在E阶段查询，前后只相差一个周期，无需转发。
+3. 写入的cp0要在下一条指令时才能用于判断中断，但是cp0是在时钟上升沿更新的，有气泡时下一条指令可能还没有到达M阶段，无法正确获得EPC。考虑气泡不可能带来新的异常，只要限制当前M阶段指令为气泡时不进入中断，就可以等到下一条指令到来。
 
 
 
@@ -87,3 +88,12 @@ vivado仿真
 
 
 
+上板
+
+![avator](board.jpg)
+
+
+
+verilator编译
+
+![avator](verilator.png)
