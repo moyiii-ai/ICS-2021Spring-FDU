@@ -1,7 +1,7 @@
 `include "common.svh"
 
 module cp0(
-    input logic clk, resetn,
+    input logic clk, resetn, bubble, 
     input logic [5:0] ext_int,
     input logic [4:0] ra, wa,
     input logic [11:0] error,
@@ -11,6 +11,7 @@ module cp0(
 );
     word_t [14:8] cp0, cp0_pre /* verilator split_var */;
     logic time_count, comp_valid;
+    logic [31:0] pcl;
 
     logic [31:0] mask12, mask13;
     always_comb begin
@@ -35,9 +36,13 @@ module cp0(
             time_count <= 0;
             comp_valid <= 0;
             time_int <= '0;
+            pcl <= 32'b0;
         end
         else begin
-            cp0_pre <= cp0;
+            if(pcl != pcM) begin
+                cp0_pre <= cp0;
+                pcl <= pcM;
+            end
             time_count <= ~time_count;
             comp_valid <= comp_valid | (wa == 5'b01011);
             if(time_int[7] == 1) begin
@@ -63,20 +68,8 @@ module cp0(
         pcN = 32'hbfc00380;
         if(time_count == 1)
             cp0[9] = cp0_pre[9] + 1;
-        if(error[11]) begin
-            if(wa == 5'b01001)
-                cp0[9] = cp_wdata;
-            if(wa == 5'b01011)
-                cp0[11] = cp_wdata;
-            if(wa == 5'b01100)
-                cp0[12] = (cp_wdata & mask12) | (cp0_pre[12] & (~mask12));
-            if(wa == 5'b01101)
-                cp0[13] = (cp_wdata & mask13) | (cp0_pre[13] & (~mask13));
-            if(wa == 5'b01110)
-                cp0[14] = cp_wdata;
-        end
 
-        if(cp0_pre[12][0] == 1 & cp0_pre[12][1] == 0 & int_info != 8'h00) begin
+        if(cp0_pre[12][0] == 1 & cp0_pre[12][1] == 0 & int_info != 8'h00 & ~bubble) begin
             flush = 1;
             cp0[13][6:2] = 5'b00000;
         end 
@@ -130,6 +123,18 @@ module cp0(
                 end
             end
         end 
+        else if(error[11]) begin
+            if(wa == 5'b01001)
+                cp0[9] = cp_wdata;
+            if(wa == 5'b01011)
+                cp0[11] = cp_wdata;
+            if(wa == 5'b01100)
+                cp0[12] = (cp_wdata & mask12) | (cp0_pre[12] & (~mask12));
+            if(wa == 5'b01101)
+                cp0[13] = (cp_wdata & mask13) | (cp0_pre[13] & (~mask13));
+            if(wa == 5'b01110)
+                cp0[14] = cp_wdata;
+        end
     end
     assign cp_rdata = cp0[ra];
     

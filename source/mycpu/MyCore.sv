@@ -50,7 +50,7 @@ module MyCore (
 
     logic [31:0] cpe;
     cp0 Cp0(
-        .clk(clk), .resetn(resetn),
+        .clk(clk), .resetn(resetn), .bubble(bubbleM), 
         .ext_int(ext_int),
         .ra(rd0e), .wa(rdM),
         .error(errorM),
@@ -145,23 +145,26 @@ module MyCore (
         .stallM(stallM), .stall(stall)
     );
 
+    logic bubbleE, bubbleM;
     always_ff @(posedge clk) begin
         if (~resetn) begin
             {controlE, controlM, controlW} <= '0;
             {vse, vte, imme, vtm, aluoutm, aluoutw, dataoutw} <= '0;
             {errore, errorm} <= '0;
-            {hiw, low, hiM, loM} <= '0;
+            {hiw, low, hiM, loM, hie, loe} <= '0;
             {rde, rse, rte, rd0e, shamte, rdm, rdw} <= '0;
-            {BadVaddrD, instrD} <= '0;
+            {instrD, BadVaddrD, AddrErrord, BadVaddrm} <= '0;
+            {bubbleE, bubbleM} <= '0;
         end 
         else begin
             if(flush) begin
                 {controlE, controlM, controlW} <= '0;
                 {vse, vte, imme, vtm, aluoutm, aluoutw, dataoutw} <= '0;
                 {errore, errorm} <= '0;
-                {hiw, low, hiM, loM} <= '0;
+                {hiw, low, hiM, loM, hie, loe} <= '0;
                 {rde, rse, rte, rd0e, shamte, rdm, rdw} <= '0;
-                {instrD, AddrErrord} <= '0;
+                {instrD, BadVaddrD, AddrErrord, BadVaddrm} <= '0;
+                {bubbleE, bubbleM} <= '0;
             end else begin
                 if(~stallM) begin
                     controlW <= controlM;
@@ -181,13 +184,15 @@ module MyCore (
                     hiM <= hiE;
                     loM <= loE;
                     aluoutm <= aluoutE;
+                    bubbleM <= bubbleE;
                 end
                 if(stall) begin
                     controlE <= '0;
                     {vse, vte, imme, hie, loe} <= '0;
                     {rde, rse, rte, shamte} <= '0;
                     {errore, rd0e} <= '0;
-                    {BadVaddrE} <= '0;
+                    {BadVaddrE, AddrErrord, BadVaddrD} <= '0;
+                    bubbleE <= 1;
                 end
                 else begin
                     controlE <= controlD;
@@ -204,6 +209,7 @@ module MyCore (
                     shamte <= shamtD;
                     errore <= errorD;
                     BadVaddrE <= BadVaddrD;
+                    bubbleE <= 0;
 
                     pcD <= pcF;
                     instrD <= instrF;
